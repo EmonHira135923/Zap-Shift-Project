@@ -1,9 +1,10 @@
 import React from "react";
+import WeAllAbout from "../../Componets/AllAboutUS/WeAllAbout";
 
 const AboutUs = () => {
   return (
     <div>
-      <h1>this is about us</h1>
+      <WeAllAbout />
     </div>
   );
 };

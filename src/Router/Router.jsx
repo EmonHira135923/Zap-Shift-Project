@@ -8,16 +8,21 @@ import AboutUs from "../Pages/AboutUs/AboutUs.jsx";
 import Pricing from "../Pages/Pricings/Pricing.jsx";
 import Contact from "../Pages/Contacts/Contact.jsx";
 import Blog from "../Pages/Blogs/Blog.jsx";
+import Error404 from "../Pages/ErrorPages/Error404.jsx";
 
 const Router = createBrowserRouter([
   {
     path: "/",
     Component: Root,
-    errorElement: <h1>error page</h1>,
+    errorElement: <Error404></Error404>,
     children: [
       { index: true, Component: Home },
       { path: "/service", Component: Service },
-      { path: "/coverage", Component: Coverage },
+      {
+        path: "/coverage",
+        Component: Coverage,
+        loader: () => fetch("warehouses.json"),
+      },
       { path: "/aboutus", Component: AboutUs },
       { path: "/pricing", Component: Pricing },
       { path: "/blog", Component: Blog },
