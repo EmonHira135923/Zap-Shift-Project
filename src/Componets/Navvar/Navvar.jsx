@@ -1,90 +1,123 @@
 import React, { useState } from "react";
-import { Menu, X, Github, House, UserPlus, LogIn } from "lucide-react";
+import {
+  Menu,
+  X,
+  House,
+  Settings,
+  Globe,
+  Info,
+  DollarSign,
+  BookOpen,
+  Phone,
+} from "lucide-react";
 import { NavLink } from "react-router";
+import Logo from "../AllImg/Logo";
 
 const Navvar = () => {
   const activeclass =
-    "border-b-2 border-[#632ee3] bg-clip-text bg-gradient-to-r from-[#632ee3] to-[#9f62f2] text-purple-700 font-bold";
-  const [toggle, settoggle] = useState(true);
+    "bg-info text-primary font-bold rounded-full px-4 py-2 transition-all duration-200";
+  const [toggle, settoggle] = useState(false);
 
-  // Dynamic Nav items
   const navItems = [
-    { name: "Home", path: "/", icon: <House /> },
-    { name: "Register", path: "/register", icon: <UserPlus /> },
-    { name: "LogIn", path: "/login", icon: <LogIn /> },
+    { name: "Home", path: "/", icon: <House size={18} /> },
+    { name: "Service", path: "/service", icon: <Settings size={18} /> },
+    { name: "Coverage", path: "/coverage", icon: <Globe size={18} /> },
+    { name: "About Us", path: "/aboutus", icon: <Info size={18} /> },
+    { name: "Pricing", path: "/pricing", icon: <DollarSign size={18} /> },
+    { name: "Blog", path: "/blog", icon: <BookOpen size={18} /> },
+    { name: "Contact", path: "/contact", icon: <Phone size={18} /> },
   ];
 
   return (
-    <nav className="p-5 bg-gray-50 shadow-md ">
-      <div className="flex justify-between gap-5 items-center mt-3 text-xl font-bold ">
-        {/* Start: Logo and Mobile Menu Button */}
-        <div className="flex items-center gap-2">
-          <div className="md:hidden flex">
-            <button onClick={() => settoggle(!toggle)}>
-              {toggle ? <Menu /> : <X />}
-            </button>
-          </div>
-          <NavLink className="flex gap-2 items-center" to="/">
-            <img
-              src=""
-              alt="Hero-Icon"
-              className="md:w-15 md:h-15 object-cover w-7 h-7"
-            />
-            <span className="md:text-2xl bg-clip-text bg-gradient-to-r from-[#632ee3] to-[#9f62f2] text-transparent">
-              HERO.IO
-            </span>
+    <nav className="bg-gray-50 shadow-md px-5 md:px-10 py-3 md:py-4 relative rounded-xl">
+      {/* Main container */}
+      <div className="flex justify-between items-center w-full">
+        {/* Logo */}
+        <NavLink className="flex items-center gap-1 md:gap-2" to="/">
+          <Logo className="w-8 h-8 md:w-10 md:h-10" />
+          <span className="text-xl md:text-2xl font-bold text-secondary">
+            HERO.IO
+          </span>
+        </NavLink>
+
+        {/* Desktop Nav items */}
+        <div className="hidden md:flex items-center gap-6">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              className={({ isActive }) =>
+                "flex items-center gap-2 px-2 py-2 rounded-md " +
+                (isActive ? activeclass : "")
+              }
+            >
+              {item.icon}
+              <span className="text-base font-medium">{item.name}</span>
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex gap-4">
+          <NavLink
+            to="/login"
+            className="btn text-primary rounded-full border border-primary px-4 py-2 hover:bg-info"
+          >
+            Sign In
+          </NavLink>
+          <NavLink
+            to="/register"
+            className="btn bg-info text-primary rounded-full px-4 py-2 "
+          >
+            Sign Up
           </NavLink>
         </div>
 
-        {/* Mobile Menu */}
-        <div
-          className={`flex flex-col md:hidden mt-1 ml-1 absolute bg-gray-300 font-light text-xl p-5 rounded-xl transition-all duration-300 ${
-            toggle ? "-top-80" : "top-22 -left-0 space-y-3"
-          }`}
-        >
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) => (isActive ? activeclass : "")}
-            >
-              <span className="flex gap-1 items-center">
-                {item.icon}
-                {item.name}
-              </span>
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Desktop Menu */}
-        <div className="md:flex items-center gap-5 hidden">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) => (isActive ? activeclass : "")}
-            >
-              <span className="flex gap-1 justify-center items-center">
-                {item.icon}
-                {item.name}
-              </span>
-            </NavLink>
-          ))}
-        </div>
-
-        {/* GitHub Button */}
-        <div className="flex">
-          <button className="btn text-white bg-gradient-to-r from-[#632ee3] to-[#9f62f2] text-xl py-6 px-5 md:p-7 md:w-40 hover:from-[#4b1fe0] hover:to-[#4b1fe0] ">
-            <NavLink
-              target="_blank"
-              className="flex items-center gap-2"
-              to="https://github.com/EmonHira135923"
-            >
-              <Github /> Contribute
-            </NavLink>
+        {/* Mobile menu toggle */}
+        <div className="md:hidden">
+          <button onClick={() => settoggle(!toggle)}>
+            {toggle ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {toggle && (
+        <div className="md:hidden mt-3 bg-gray-100 rounded-xl shadow-lg w-full absolute left-0 p-5 flex flex-col gap-4 z-50">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              onClick={() => settoggle(false)}
+              className={({ isActive }) =>
+                "flex items-center gap-3 px-3 py-2 rounded-md " +
+                (isActive ? activeclass : "")
+              }
+            >
+              {item.icon}
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
+
+          {/* Mobile Buttons */}
+          <div className="flex flex-col gap-3 mt-2">
+            <NavLink
+              to="/login"
+              onClick={() => settoggle(false)}
+              className="btn text-primary rounded-full border border-primary px-4 py-2 hover:bg-info"
+            >
+              Sign In
+            </NavLink>
+            <NavLink
+              to="/register"
+              onClick={() => settoggle(false)}
+              className="btn bg-info text-primary rounded-full px-4 py-2"
+            >
+              Sign Up
+            </NavLink>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
