@@ -1,9 +1,10 @@
 import React from "react";
+import CoverageWithMap from "../../Componets/Converages/CoverageWithMap";
 
 const Coverage = () => {
   return (
     <div>
-      <h1>This is Coverage</h1>
+      <CoverageWithMap />
     </div>
   );
 };
