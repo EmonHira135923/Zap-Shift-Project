@@ -13,6 +13,12 @@ import Story from "../Componets/AllAboutUS/Story.jsx";
 import Mission from "../Componets/AllAboutUS/Mission.jsx";
 import Success from "../Componets/AllAboutUS/Success.jsx";
 import TeamsandOther from "../Componets/AllAboutUS/TeamsandOther.jsx";
+import Authentication from "../layout/Authentication.jsx";
+import UserLogin from "../Pages/Login/UserLogin.jsx";
+import UserReg from "../Pages/Registration/UserReg.jsx";
+import UserForget from "../Pages/ForgetPassword/UserForget.jsx";
+import UserCode from "../Pages/ForgetPassword/UserCode.jsx";
+import UserPass from "../Pages/ForgetPassword/UserPass.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -52,6 +58,32 @@ const Router = createBrowserRouter([
       { path: "/pricing", Component: Pricing },
       { path: "/blog", Component: Blog },
       { path: "/contact", Component: Contact },
+    ],
+  },
+  {
+    path: "/",
+    Component: Authentication,
+    children: [
+      {
+        path: "login",
+        Component: UserLogin,
+      },
+      {
+        path: "register",
+        Component: UserReg,
+      },
+      {
+        path: "forgot",
+        Component: UserForget,
+      },
+      {
+        path: "getcode",
+        Component: UserCode,
+      },
+      {
+        path: "resetpass",
+        Component: UserPass,
+      },
     ],
   },
 ]);
