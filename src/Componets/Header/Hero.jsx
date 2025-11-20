@@ -21,16 +21,16 @@ const Hero = () => {
       title: "Nationwide Coverage",
       description:
         "We deliver across the country with our extensive network of delivery partners and hubs.",
-      primaryBtn: "Learn More",
-      secondaryBtn: "Get Quote",
+      primaryBtn: "Track Your Parcel",
+      secondaryBtn: "Sign Up",
     },
     {
       image: banner3,
       title: "Secure & Insured Deliveries",
       description:
         "Your packages are protected with our comprehensive insurance and security measures.",
-      primaryBtn: "View Services",
-      secondaryBtn: "Contact Us",
+      primaryBtn: "Track Your Parcel",
+      secondaryBtn: "Sign Up",
     },
   ];
 
