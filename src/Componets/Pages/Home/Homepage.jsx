@@ -3,6 +3,9 @@ import HeroSlider from "./HeroSlider";
 import HowItWorks from "./HowItWorks";
 import OurServices from "./OurServices";
 import PartnerMarquee from "./PartnerMarquee";
+import Testimonials from "./Testimonials";
+import MerchantCTA from "./MerchantCTA";
+import FAQSection from "./FAQSection";
 
 const Homepage = () => {
   return (
@@ -11,6 +14,9 @@ const Homepage = () => {
       <HowItWorks />
       <OurServices />
       <PartnerMarquee />
+      <MerchantCTA />
+      <Testimonials />
+      <FAQSection />
     </div>
   );
 };
