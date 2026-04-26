@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import {
@@ -6,8 +7,11 @@ import {
   FaYoutube,
   FaTwitter,
 } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathName = usePathname();
+  if (pathName.startsWith("/auth")) return <></>;
   return (
     <footer className="w-full bg-[#f3f4f6] px-4 py-12">
       {/* Black Container */}
