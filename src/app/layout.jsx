@@ -2,6 +2,7 @@ import { Urbanist } from "next/font/google";
 import "./globals.css";
 import Header from "@/Componets/Shared/Header";
 import Footer from "@/Componets/Shared/Footer";
+import AuthProvider from "@/Componets/Provider/AuthProvider";
 
 const urbanistfont = Urbanist({
   weight: ["100", "400", "500", "700"],
@@ -66,9 +67,11 @@ export default function RootLayout({ children }) {
       className={`${urbanistfont.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Header />
-        {children}
-        <Footer />
+        <AuthProvider>
+          <Header />
+          {children}
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
