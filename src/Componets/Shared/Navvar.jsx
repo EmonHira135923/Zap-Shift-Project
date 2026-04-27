@@ -183,6 +183,12 @@ const Navvbar = () => {
                 >
                   <FiGrid size={20} className="text-[#C6EB71]" /> Dashboard
                 </Link>
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-[#f3f4f6]"
+                >
+                  <PersonStanding size={16} /> Profile
+                </Link>
                 <button
                   onClick={() => {
                     logout();

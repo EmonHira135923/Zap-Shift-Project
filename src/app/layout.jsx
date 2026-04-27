@@ -4,6 +4,7 @@ import Header from "@/Componets/Shared/Header";
 import Footer from "@/Componets/Shared/Footer";
 import AuthProvider from "@/Componets/Provider/AuthProvider";
 import { ToastContainer } from "react-toastify";
+import SessionWrapper from "@/Componets/Provider/SessionWrapper";
 
 const urbanistfont = Urbanist({
   weight: ["100", "400", "500", "700"],
@@ -68,12 +69,14 @@ export default function RootLayout({ children }) {
       className={`${urbanistfont.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <ToastContainer />
-          <Header />
-          {children}
-          <Footer />
-        </AuthProvider>
+        <SessionWrapper>
+          <AuthProvider>
+            <ToastContainer />
+            <Header />
+            {children}
+            <Footer />
+          </AuthProvider>
+        </SessionWrapper>
       </body>
     </html>
   );
