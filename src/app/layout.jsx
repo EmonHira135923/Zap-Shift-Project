@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/Componets/Shared/Header";
 import Footer from "@/Componets/Shared/Footer";
 import AuthProvider from "@/Componets/Provider/AuthProvider";
+import { ToastContainer } from "react-toastify";
 
 const urbanistfont = Urbanist({
   weight: ["100", "400", "500", "700"],
@@ -68,6 +69,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
+          <ToastContainer />
           <Header />
           {children}
           <Footer />

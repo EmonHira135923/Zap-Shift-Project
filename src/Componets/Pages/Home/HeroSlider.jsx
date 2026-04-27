@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -11,6 +11,13 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 const HeroSlider = () => {
+  // Hydration error সমাধান করার জন্য মাউন্ট চেক
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const slides = [
     {
       id: 1,
@@ -18,7 +25,7 @@ const HeroSlider = () => {
       highlight: "Parcel Arrives",
       subtitle: "On Time - No Fuss.",
       desc: "Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.",
-      img: "/hero-1.png", // Matches image_3c1ff0
+      img: "/hero-1.png",
     },
     {
       id: 2,
@@ -26,7 +33,7 @@ const HeroSlider = () => {
       highlight: "Delivery & Easy",
       subtitle: "Pickup",
       desc: "Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.",
-      img: "/hero-2.png", // Matches image_3c1f93
+      img: "/hero-2.png",
     },
     {
       id: 3,
@@ -34,9 +41,12 @@ const HeroSlider = () => {
       highlight: "30 Minutes",
       subtitle: "at your doorstep",
       desc: "Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. From personal packages to business shipments — we deliver on time, every time.",
-      img: "/hero-3.png", // Matches image_3c1f52
+      img: "/hero-3.png",
     },
   ];
+
+  // যদি মাউন্ট না হয়, তবে কিছু রিটার্ন করবে না (SSR mismatch এড়াতে)
+  if (!mounted) return null;
 
   return (
     <section className="w-full bg-[#f3f4f6] py-6 md:py-10 px-4">
@@ -51,16 +61,11 @@ const HeroSlider = () => {
         >
           {slides.map((slide) => (
             <SwiperSlide key={slide.id}>
-              {/* Responsive Container: Column on mobile, Row on MD+ */}
               <div className="flex flex-col md:flex-row items-center justify-between p-6 md:p-12 lg:p-20 min-h-[550px] md:min-h-[500px] gap-8 md:gap-10">
-                {/* Text Content: Centered on mobile, Left-aligned on MD+ */}
                 <div className="flex-1 space-y-4 md:space-y-6 text-center md:text-left order-2 md:order-1">
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#002B36] leading-[1.1] md:leading-tight">
                     {slide.title} <br />
-                    <span className="text-[#C6EB71]">
-                      {slide.highlight}
-                    </span>{" "}
-                    <br />
+                    <span className="text-[#C6EB71]">{slide.highlight}</span> <br />
                     {slide.subtitle}
                   </h1>
                   <p className="text-gray-500 text-xs sm:text-sm md:text-base max-w-md mx-auto md:mx-0 leading-relaxed">
@@ -86,13 +91,13 @@ const HeroSlider = () => {
                   </div>
                 </div>
 
-                {/* Image Section: Top on mobile, Right on MD+ */}
                 <div className="flex-1 w-full flex justify-center items-center order-1 md:order-2">
                   <div className="relative w-full h-[220px] sm:h-[280px] md:h-[400px] lg:h-[450px]">
                     <Image
                       src={slide.img}
                       alt="ZapShift Hero"
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Performance এরর ফিক্স করার জন্য
                       className="object-contain"
                       priority
                     />
@@ -104,7 +109,6 @@ const HeroSlider = () => {
         </Swiper>
       </div>
 
-      {/* Responsive Pagination Styling */}
       <style jsx global>{`
         .hero-swiper .swiper-pagination-bullet {
           width: 20px;
@@ -124,25 +128,15 @@ const HeroSlider = () => {
           width: 100% !important;
           text-align: center;
         }
-
         @media (min-width: 768px) {
-          .hero-swiper .swiper-pagination-bullet {
-            width: 30px;
-          }
-          .hero-swiper .swiper-pagination-bullet-active {
-            width: 50px;
-          }
+          .hero-swiper .swiper-pagination-bullet { width: 30px; }
+          .hero-swiper .swiper-pagination-bullet-active { width: 50px; }
           .hero-swiper .swiper-pagination {
             bottom: 40px !important;
             left: 50px !important;
             padding-left: 3rem;
             width: auto !important;
             text-align: left;
-          }
-        }
-        @media (min-width: 1024px) {
-          .hero-swiper .swiper-pagination {
-            left: 80px !important;
           }
         }
       `}</style>

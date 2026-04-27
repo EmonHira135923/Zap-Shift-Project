@@ -1,0 +1,89 @@
+import { getUsers } from "@/app/(Backend)/lib/dbConnect";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
+
+export async function POST(request) {
+  try {
+    const userCollection = await getUsers();
+    const body = await request.json();
+    const { email, password } = body;
+
+    if (!email || !password) {
+      return Response.json(
+        { success: false, message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const user = await userCollection.findOne({ email });
+    if (!user) {
+      return Response.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 400 }
+      );
+    }
+
+    const comparePassword = await bcrypt.compare(password, user.password);
+    if (!comparePassword) {
+      return Response.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 400 }
+      );
+    }
+
+    const payload = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    // console.log(payload);
+
+    const accessToken = jwt.sign(payload, process.env.NEXTAUTH_SECRET, {
+      expiresIn: "15m",
+    });
+
+    const refreshToken = jwt.sign(
+      payload,
+      process.env.NEXTAUTH_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // ✅ await দিয়ে cookies set করুন
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60,
+    });
+
+    cookieStore.set("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return Response.json(
+      {
+        message: "User Login Successfully.",
+        success: true,
+        result: accessToken,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return Response.json(
+      {
+        message: "Login Failed",
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
