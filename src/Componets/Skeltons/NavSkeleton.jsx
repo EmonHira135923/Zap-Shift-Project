@@ -1,10 +1,9 @@
 export const NavSkeleton = () => (
   <div className="flex items-center gap-3 animate-pulse">
-    {/* Sign In button skeleton */}
-    <div className="hidden md:block w-24 h-10 bg-gray-200 rounded-xl"></div>
-    {/* Be a rider button skeleton */}
-    <div className="hidden md:block w-32 h-10 bg-gray-200 rounded-xl"></div>
-    {/* Mobile menu icon skeleton */}
-    <div className="lg:hidden w-10 h-10 bg-gray-200 rounded-lg"></div>
+    {/* স্ক্রিনশটের মেনু আইটেমগুলো যদি লোডিং এ নড়াচড়া করে তবে এখানে একটি গ্যাপ রাখা ভালো */}
+    <div className="flex items-center gap-3">
+       {/* গোল প্রোফাইল ইমেজের স্কেলিটন */}
+       <div className="w-10 h-10 bg-gray-200 rounded-full border-2 border-white shadow-sm"></div>
+    </div>
   </div>
 );
