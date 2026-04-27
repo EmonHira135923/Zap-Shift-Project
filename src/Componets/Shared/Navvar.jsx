@@ -26,6 +26,7 @@ const Navvbar = () => {
     { name: "Coverage", href: "/coverage" },
     { name: "About Us", href: "/about" },
     { name: "Pricing", href: "/pricing" },
+    { name: "Be a Rider", href: "/be-a-rider" },
   ];
 
   return (
