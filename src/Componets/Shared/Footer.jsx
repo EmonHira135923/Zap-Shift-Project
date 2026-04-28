@@ -13,6 +13,7 @@ const Footer = () => {
   const pathName = usePathname();
   if (pathName.startsWith("/auth")) return <></>;
   if (pathName.startsWith("/forbidden")) return <></>;
+  if (pathName.startsWith("/dashboard")) return <></>;
   return (
     <footer className="w-full bg-[#f3f4f6] px-4 py-12">
       {/* Black Container */}

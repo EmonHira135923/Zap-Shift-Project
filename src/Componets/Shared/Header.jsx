@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const Header = () => {
   const pathName = usePathname();
   if (pathName.startsWith("/auth")) return <></>;
+  if (pathName.startsWith("/dashboard")) return <></>;
   return (
     <div>
       <header>
