@@ -24,19 +24,17 @@ const handler = NextAuth({
           const userExist = await userCollection.findOne({ email });
 
           if (!userExist) {
-            // ১. যদি নতুন ইউজার হয়, তবে সব ডাটা ইনসার্ট হবে
             await userCollection.insertOne({
               name,
               email,
               image,
+              phone: "", // সোশ্যাল লগইনে শুরুতে ফোন থাকে না, খালি রাখলাম
               role: "user",
               provider: account.provider,
               createdAt: new Date(),
-              updatedAt: new Date(), // null না দিয়ে বর্তমান সময় দেওয়া ভালো
+              updatedAt: new Date(),
             });
           } else {
-            // ২. যদি ইউজার আগে থেকেই থাকে, তবে তার provider ফিল্ডটি আপডেট হবে
-            // এটি করলে গিটহাব দিয়ে অ্যাকাউন্ট থাকলেও গুগল দিয়ে লগইন করলে provider আপডেট হবে।
             await userCollection.updateOne(
               { email },
               {
@@ -49,11 +47,41 @@ const handler = NextAuth({
           }
           return true;
         } catch (error) {
-          console.log("Database error during sign in:", error);
+          console.log("Database error:", error);
           return false;
         }
       }
       return true;
+    },
+
+    // ১. JWT কলব্যাক: ডাটাবেজ থেকে ডাটা এনে টোকেনে রাখা
+    async jwt({ token, user, account }) {
+      if (user) {
+        // প্রথমবার লগইনের সময় ডাটাবেজ থেকে ইউজার ডাটা আনা
+        const userCollection = await getUsers();
+        const dbUser = await userCollection.findOne({ email: user.email });
+
+        if (dbUser) {
+          token.id = dbUser._id;
+          token.role = dbUser.role;
+          token.phone = dbUser.phone;
+          token.image = dbUser.image; // ক্লাউডিনারি ইমেজটি এখানে সেট হবে
+          token.provider = dbUser.provider;
+        }
+      }
+      return token;
+    },
+
+    // ২. Session কলব্যাক: টোকেন থেকে ডাটা সেশনে পাঠানো
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.phone = token.phone;
+        session.user.image = token.image; // আপনার ডাটাবেজের ইমেজটি সেশনে যাবে
+        session.user.provider = token.provider;
+      }
+      return session;
     },
   },
 });

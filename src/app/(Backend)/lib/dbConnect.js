@@ -34,3 +34,9 @@ export const getUsers = async () => {
   const database = await connectDB();
   return database.collection("users");
 };
+
+// Parcels
+export const getParcels = async () => {
+  const database = await connectDB();
+  return database.collection("Parcels");
+};

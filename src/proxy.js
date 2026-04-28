@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose"; // Next.js Edge Runtime-এর জন্য jose ব্যবহার করা সেরা
 
-const privateRoutes = ["/be-a-rider", "/dashboard", "/profile"];
+const privateRoutes = ["/be-a-rider", "/send-parcel" ,"/dashboard", "/profile"];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;
@@ -62,5 +62,5 @@ export async function proxy(request) {
 
 // ফাইলটির নাম অবশ্যই middleware.js হতে হবে
 export const config = {
-  matcher: ["/be-a-rider/:path*", "/dashboard/:path*", "/profile/:path*"],
+  matcher: ["/be-a-rider/:path*", "/send-parcel/:path*", "/dashboard/:path*", "/profile/:path*"],
 };
