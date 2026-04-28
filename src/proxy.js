@@ -22,7 +22,9 @@ export async function proxy(request) {
 
   // ৩. যদি লগইন না থাকে এবং প্রাইভেট রুটে যেতে চায়
   if (!isAuthenticated && isPrivateRoute) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    const loginurl = new URL("/auth/login",request.url);
+    loginurl.searchParams.set("callbackUrl",reqpath)
+    return NextResponse.redirect(loginurl);
   }
 
   // ৪. টোকেন ডিকোড এবং রোল ভ্যালিডেশন
@@ -37,13 +39,17 @@ export async function proxy(request) {
         payload: null,
       }));
 
-      if (payload) {
-        console.log("User Role:", payload.role);
+      const isUser = payload?.role === "user";
+      const isAdmin = payload?.role === "admin";
 
-        if (reqpath.startsWith("/dashboard") && payload.role !== "admin") {
-          console.log("Access Denied: Not an Admin");
-          return NextResponse.redirect(new URL("/forbidden", request.url));
-        }
+      if (payload) {
+        console.log("User Role:",isUser);
+        console.log("Admin Role:",isAdmin);
+
+        // if (reqpath.startsWith("/dashboard") && payload.role !== "admin") {
+        //   console.log("Access Denied: Not an Admin");
+        //   return NextResponse.redirect(new URL("/forbidden", request.url));
+        // }
       }
     } catch (error) {
       // NextAuth টোকেন হলে এটি এরর দিতে পারে, তাই আমরা ইগনোর করতে পারি

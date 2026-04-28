@@ -3,15 +3,19 @@ import React, { useState } from "react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import { ImSpinner2 } from "react-icons/im";
+import { useSearchParams } from "next/navigation";
 
 const Socialpage = () => {
   const [loadingProvider, setLoadingProvider] = useState(null);
+  const searchParams = useSearchParams();
+
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const handleSocialLogin = async (provider) => {
     setLoadingProvider(provider);
     try {
       // এটি আপনাকে সংশ্লিষ্ট প্রোভাইডারের লগইন পেজে নিয়ে যাবে
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      await signIn(provider, { callbackUrl: callbackUrl || "/dashboard" });
     } catch (error) {
       console.error("Login failed:", error);
       setLoadingProvider(null);
