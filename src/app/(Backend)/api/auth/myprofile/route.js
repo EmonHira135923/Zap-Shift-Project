@@ -23,7 +23,7 @@ export async function GET(request) {
     if (!token) {
       return Response.json(
         { success: false, message: "Unauthorized: No token provided" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -34,14 +34,14 @@ export async function GET(request) {
     } catch (err) {
       return Response.json(
         { success: false, message: "Invalid or expired token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     if (!decoded?._id) {
       return Response.json(
         { success: false, message: "Invalid token payload" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -54,7 +54,7 @@ export async function GET(request) {
     if (!user) {
       return Response.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function GET(request) {
         success: true,
         result: userWithoutPassword,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return Response.json(
@@ -76,7 +76,7 @@ export async function GET(request) {
         success: false,
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

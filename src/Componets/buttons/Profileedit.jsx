@@ -1,10 +1,13 @@
+import Link from "next/link";
 import React from "react";
 
-const Profileedit = ({user}) => {
-    console.log(user)
+const Profileedit = ({ user }) => {
   return (
     <div>
-      <button className="bg-[#D4F06D] hover:bg-[#c2de56] text-black px-8 py-3.5 rounded-2xl font-black text-sm shadow-lg shadow-[#D4F06D]/30 transition-all active:scale-95 flex items-center gap-2">
+      <Link
+        href={`/profile/${user._id}`}
+        className="bg-[#D4F06D] hover:bg-[#c2de56] text-black px-8 py-3.5 rounded-2xl font-black text-sm shadow-lg shadow-[#D4F06D]/30 transition-all active:scale-95 flex items-center gap-2"
+      >
         <svg
           className="w-4 h-4"
           fill="none"
@@ -19,7 +22,7 @@ const Profileedit = ({user}) => {
           />
         </svg>
         Edit Profile
-      </button>
+      </Link>
     </div>
   );
 };
