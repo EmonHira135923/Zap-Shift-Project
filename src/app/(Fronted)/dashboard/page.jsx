@@ -27,7 +27,7 @@ export const metadata = {
   },
 };
 
-import DashboardHome from "@/Componets/dashboard/DashboardHome";
+import DashboardHome from "@/Componets/Pages/dashboard/DashboardHome";
 import React from "react";
 
 const Dashboard = () => {
