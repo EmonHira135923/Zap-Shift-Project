@@ -173,7 +173,7 @@ const Updateparcelpage = () => {
                   {parcel?.senderDistrict}
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-400 border border-gray-100">
-                  Region: {parcel?.senderRegion}
+                  {parcel?.senderDistrict}
                 </div>
               </div>
 
@@ -212,7 +212,7 @@ const Updateparcelpage = () => {
                   {parcel?.receiverDistrict}
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-500 border border-gray-100">
-                  Region: {parcel?.receiverRegion}
+                  {parcel?.receiverDistrict}
                 </div>
               </div>
 
