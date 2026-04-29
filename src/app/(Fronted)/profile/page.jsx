@@ -1,34 +1,37 @@
 import Profilepage from "@/Componets/Pages/profile/page";
 import React from "react";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { getUsers } from "@/app/(Backend)/lib/dbConnect";
 
-export const metadata = {
-  title: "My Profile",
+export async function generateMetadata() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+  let userName = "User";
 
-  description:
-    "View and manage your profile information in ZAP-SHIFT-PROJECT. Update personal details, contact information, and account settings بسهولة and securely.",
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+      const userCollection = await getUsers();
+      const user = await userCollection.findOne({ email: decoded.email });
+      if (user?.name) {
+        userName = user.name;
+      }
+    } catch (error) {
+      // Silent error
+    }
+  }
 
-  keywords: [
-    "user profile dashboard",
-    "my profile courier",
-    "account settings",
-    "user information update",
-    "ZAP SHIFT PROJECT profile",
-  ],
-
-  openGraph: {
-    title: "My Profile | ZAP-SHIFT-PROJECT",
-    description:
-      "Access and manage your personal profile and account settings بسهولة.",
-    url: "https://yourdomain.com/dashboard/profile",
-    siteName: "ZAP-SHIFT-PROJECT",
-    type: "website",
-  },
-
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+  return {
+    title: `${userName} | My Profile`,
+    description: `View and manage ${userName}'s profile in ZAP-SHIFT-PROJECT. Update personal details and account settings securely.`,
+    keywords: ["user profile", "account settings", "ZAP SHIFT PROJECT profile"],
+    robots: {
+      index: false,
+      follow: true,
+    },
+  };
+}
 
 const MyProfile = () => {
   return (

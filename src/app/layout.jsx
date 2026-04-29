@@ -5,6 +5,7 @@ import Footer from "@/Componets/Shared/Footer";
 import AuthProvider from "@/Componets/Provider/AuthProvider";
 import { ToastContainer } from "react-toastify";
 import SessionWrapper from "@/Componets/Provider/SessionWrapper";
+import ReactQueryProvider from "@/Componets/Provider/ReactQueryProvider";
 
 const urbanistfont = Urbanist({
   weight: ["100", "400", "500", "700"],
@@ -61,6 +62,8 @@ export const metadata = {
   },
 };
 
+
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -69,14 +72,16 @@ export default function RootLayout({ children }) {
       className={`${urbanistfont.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SessionWrapper>
-          <AuthProvider>
-            <ToastContainer />
-            <Header />
-            {children}
-            <Footer />
-          </AuthProvider>
-        </SessionWrapper>
+        <ReactQueryProvider>
+          <SessionWrapper>
+            <AuthProvider>
+              <ToastContainer />
+              <Header />
+              {children}
+              <Footer />
+            </AuthProvider>
+          </SessionWrapper>
+        </ReactQueryProvider>
       </body>
     </html>
   );

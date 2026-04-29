@@ -6,11 +6,14 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
     const query = {};
-    if(email){
-        query.senderEmail = email;
+    if (email) {
+      query.senderEmail = email;
     }
     // console.log(query.senderEmail);
-    const result = await parcelCollections.find(query).toArray();
+
+    const options = { sort: { createdAt: -1 } };
+
+    const result = await parcelCollections.find(query,options).toArray();
     return Response.json({ success: true, message: result }, { status: 200 });
   } catch (err) {
     return Response.json(
@@ -27,7 +30,7 @@ export async function POST(request) {
     const newParcel = {
       ...body,
       createdAt: new Date(),
-      updatedAt: null
+      updatedAt: null,
     };
     const result = await parcelCollections.insertOne(newParcel);
     return Response.json({ success: true, message: result }, { status: 200 });

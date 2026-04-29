@@ -8,14 +8,12 @@ import { toast } from "react-toastify";
 import { uploadToCloudinary } from "@/app/(Backend)/lib/cloudanry";
 import Image from "next/image";
 
-const Editpage = () => {
+const Editpage = ({ initialData }) => {
   const { id } = useParams();
   const { user } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preview, setPreview] = useState(null); // Initial state null রাখা হয়েছে এরর এড়াতে
-
-  console.log("user id", id);
+  const [preview, setPreview] = useState(null);
 
   const {
     register,
@@ -28,24 +26,25 @@ const Editpage = () => {
   const imageFile = watch("imageFile");
 
   useEffect(() => {
-    if (user) {
-      setValue("name", user.name);
-      setValue("phone", user.phone);
-      setPreview(user.image || "/default-avatar.png"); // ইমেজ না থাকলে একটি ডিফল্ট পাথ
+    const activeData = initialData || user;
+    if (activeData) {
+      setValue("name", activeData.name || "");
+      setValue("phone", activeData.phone || "");
+      setPreview(activeData.image || "/default-avatar.png");
     }
-  }, [user, setValue]);
+  }, [initialData, user, setValue]);
 
   useEffect(() => {
     if (imageFile && imageFile[0]) {
       const objectUrl = URL.createObjectURL(imageFile[0]);
       setPreview(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl); // মেমোরি লিক এড়াতে ক্লিনআপ
+      return () => URL.revokeObjectURL(objectUrl);
     }
   }, [imageFile]);
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    let finalImageUrl = user?.image;
+    let finalImageUrl = initialData?.image || user?.image;
 
     try {
       if (data.imageFile && data.imageFile[0]) {
@@ -82,7 +81,6 @@ const Editpage = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
-          {/* ১. ইমেজ প্রিভিউ (টপ সেকশনেই থাকছে ডিজাইনের জন্য) */}
           <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-50">
             <div className="h-28 w-28 rounded-full border-4 border-[#D4F06D] overflow-hidden bg-gray-50 shadow-inner relative">
               {preview ? (
@@ -90,6 +88,7 @@ const Editpage = () => {
                   fill
                   src={preview}
                   alt="Profile"
+                  sizes="112px"
                   className="object-cover"
                 />
               ) : (
@@ -98,13 +97,13 @@ const Editpage = () => {
             </div>
           </div>
 
-          {/* ২. ফুল নেম ফিল্ড */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
               Full Name
             </label>
             <input
               {...register("name", { required: "Name is required" })}
+              placeholder="Enter your full name"
               className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#D4F06D] outline-none"
             />
             {errors.name && (
@@ -114,7 +113,6 @@ const Editpage = () => {
             )}
           </div>
 
-          {/* ৩. ইমেজ ইনপুট ফিল্ড (আপনার রিকুয়েস্ট অনুযায়ী নামের পরে) */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
               Change Profile Picture
@@ -124,7 +122,7 @@ const Editpage = () => {
                 type="file"
                 accept="image/*"
                 {...register("imageFile")}
-                className="w-full bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-5 py-8 text-xs font-bold cursor-pointer file:hidden text-center hover:bg-gray-100 transition-all"
+                className="w-full bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-5 py-8 text-xs font-bold cursor-pointer file:hidden text-center hover:bg-gray-100 transition-all opacity-0 relative z-10"
               />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-400 font-bold text-[11px] uppercase tracking-tighter">
                 Click or drag to upload new image
@@ -132,13 +130,13 @@ const Editpage = () => {
             </div>
           </div>
 
-          {/* ৪. ফোন নাম্বার ফিল্ড */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
               Phone Number
             </label>
             <input
               {...register("phone")}
+              placeholder="Enter phone number"
               className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#D4F06D] outline-none"
             />
           </div>
@@ -147,14 +145,14 @@ const Editpage = () => {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 py-4 rounded-2xl font-bold text-sm text-gray-500 bg-gray-50"
+              className="flex-1 py-4 rounded-2xl font-bold text-sm text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               Back
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-[2] bg-black text-[#D4F06D] py-4 rounded-2xl font-black text-sm shadow-xl disabled:opacity-50 transition-all"
+              className="flex-[2] bg-black text-[#D4F06D] py-4 rounded-2xl font-black text-sm shadow-xl disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-95"
             >
               {isSubmitting ? "Processing..." : "Save Changes"}
             </button>

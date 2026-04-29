@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.6",
     "axios": "^1.15.2",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",

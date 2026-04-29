@@ -3,7 +3,7 @@ import DashboardLayoutClient from "@/Componets/Shared/DashboardLayoutClient";
 export const metadata = {
   title: {
     default: "Dashboard | ZAP-SHIFT-PROJECT | Courier & Logistics Company",
-    template: "%s | ZAP-SHIFT-PROJECT",
+    template: "%s | Dashboard | ZAP-SHIFT-PROJECT",
   },
 
   description:

@@ -4,6 +4,7 @@ import Link from "next/link";
 import useAuth from "../utils/Hooks/useAuth";
 import Image from "next/image";
 
+
 const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
   const { logout, user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,6 +18,7 @@ const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
 
   return (
     <div className="flex items-center justify-between h-20 px-4 sm:px-8 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">

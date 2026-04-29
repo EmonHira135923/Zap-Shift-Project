@@ -1,31 +1,118 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-// ─── ROUTES CONFIGURATION ──────────────────────────────────────────────────
+import {
+  LuLayoutDashboard,
+  LuUsers,
+  LuSettings,
+  LuChevronDown,
+  LuUserPlus,
+  LuUserCheck,
+  LuPackage,
+} from "react-icons/lu";
+import useAuth from "../utils/Hooks/useAuth";
+
 const ROUTES = [
-  { label: "Dashboard", href: "/dashboard", icon: (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-    </svg>
-  )},
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: <LuLayoutDashboard className="w-5 h-5" />,
+    roles: ["admin", "user"],
+  },
+  {
+    label: "Manage Users",
+    icon: <LuUsers className="w-5 h-5" />,
+    isDropdown: true,
+    roles: ["admin"],
+    subLinks: [
+      {
+        label: "All Users",
+        href: "/dashboard/users",
+        icon: <LuUserCheck className="w-4 h-4" />,
+      },
+      {
+        label: "Add User",
+        href: "/dashboard/users/add",
+        icon: <LuUserPlus className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    label: "Manage Parcels",
+    icon: <LuPackage className="w-5 h-5" />,
+    isDropdown: true,
+    roles: ["admin"],
+    subLinks: [
+      {
+        label: "All Parcels",
+        href: "/dashboard/parcels",
+        icon: <LuPackage className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: <LuSettings className="w-5 h-5" />,
+    roles: ["admin", "user"],
+  },
 ];
 
 const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  
+  // Default vave sob dropdown bondho thakbe
+  const [openMenus, setOpenMenus] = useState({});
+
+  // Auto-open dropdown jodi user oi menu-r bhetore kono page-e thake
+  useEffect(() => {
+    const activeRoute = ROUTES.find(
+      (route) =>
+        route.isDropdown &&
+        route.subLinks.some((sub) => pathname === sub.href)
+    );
+    if (activeRoute) {
+      setOpenMenus((prev) => ({ ...prev, [activeRoute.label]: true }));
+    }
+  }, [pathname]);
+
+  const toggleMenu = (label) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
+  const filteredRoutes = ROUTES.filter((route) => {
+    return route.roles ? route.roles.includes(user?.role) : true;
+  });
+
+  // Skeleton UI for loading state
+  const NavSkeleton = () => (
+    <div className="space-y-4 animate-pulse px-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center gap-3 py-2">
+          <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+          {!collapsed && <div className="h-4 bg-gray-200 rounded w-24"></div>}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <>
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm transition-opacity" 
-          onClick={onClose} 
+        <div
+          className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={onClose}
         />
       )}
 
-      <aside 
+      <aside
         className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out
         ${collapsed ? "md:w-[85px]" : "md:w-64"} 
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"} w-64`}
@@ -34,8 +121,8 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
         <div className="flex items-center h-20 px-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[#D4F06D] rounded-lg flex items-center justify-center shrink-0 shadow-sm relative overflow-hidden">
-               <div className="absolute inset-0 bg-black/5 rotate-45 translate-x-4"></div>
-               <span className="text-black font-black text-xs relative z-10">ZS</span>
+              <div className="absolute inset-0 bg-black/5 rotate-45 translate-x-4"></div>
+              <span className="text-black font-black text-xs relative z-10">ZS</span>
             </div>
             {!collapsed && (
               <span className="font-black text-xl text-[#1A1A1A] tracking-tight">ZapShift</span>
@@ -43,45 +130,80 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
           </div>
         </div>
 
-        {/* Menu Label */}
         {!collapsed && (
           <div className="px-7 py-2">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Menu</p>
           </div>
         )}
 
-        {/* Navigation Links */}
         <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto scrollbar-hide">
-          {ROUTES.map((route) => {
-            const active = pathname === route.href;
-            return (
-              <Link
-                key={route.href}
-                href={route.href}
-                onClick={() => { if (window.innerWidth < 768) onClose(); }}
-                className={`group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 relative
-                  ${active 
-                    ? "bg-[#D4F06D] text-black shadow-lg shadow-[#D4F06D]/20" 
-                    : "text-gray-500 hover:bg-gray-50 hover:text-black"
-                  }`}
-              >
-                <span className={`transition-transform duration-300 ${active ? "scale-110" : "group-hover:scale-110"}`}>
-                  {route.icon}
-                </span>
-                
-                {!collapsed && (
-                  <span className={`text-[14px] font-bold tracking-tight ${active ? "text-black" : "text-gray-600"}`}>
-                    {route.label}
-                  </span>
-                )}
+          {loading ? (
+            <NavSkeleton />
+          ) : (
+            filteredRoutes.map((route) => {
+              if (route.isDropdown) {
+                const isOpen = openMenus[route.label];
+                const isSubActive = route.subLinks.some((sub) => pathname === sub.href);
 
-                {/* Plus Icon Style from Image */}
-                {active && !collapsed && (
-                  <span className="ml-auto text-lg font-light opacity-60">+</span>
-                )}
-              </Link>
-            );
-          })}
+                return (
+                  <div key={route.label} className="space-y-1">
+                    <button
+                      onClick={() => toggleMenu(route.label)}
+                      className={`w-full group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300
+                        ${isSubActive ? "bg-gray-50 text-black" : "text-gray-500 hover:bg-gray-50 hover:text-black"}`}
+                    >
+                      <span className="group-hover:scale-110 transition-transform">{route.icon}</span>
+                      {!collapsed && (
+                        <>
+                          <span className="text-[14px] font-bold tracking-tight flex-1 text-left">{route.label}</span>
+                          <LuChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                        </>
+                      )}
+                    </button>
+
+                    {isOpen && !collapsed && (
+                      <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1 mt-1">
+                        {route.subLinks.map((sub) => {
+                          const active = pathname === sub.href;
+                          return (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all
+                                ${active ? "text-[#98B42C] font-bold bg-[#98B42C]/5" : "text-gray-500 hover:text-black"}`}
+                            >
+                              {sub.icon}
+                              <span className="text-sm">{sub.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              const active = pathname === route.href;
+              return (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  onClick={() => { if (window.innerWidth < 768) onClose(); }}
+                  className={`group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 relative
+                    ${active ? "bg-[#D4F06D] text-black shadow-lg shadow-[#D4F06D]/20" : "text-gray-500 hover:bg-gray-50 hover:text-black"}`}
+                >
+                  <span className={`transition-transform duration-300 ${active ? "scale-110" : "group-hover:scale-110"}`}>
+                    {route.icon}
+                  </span>
+                  {!collapsed && (
+                    <span className={`text-[14px] font-bold tracking-tight ${active ? "text-black" : "text-gray-600"}`}>
+                      {route.label}
+                    </span>
+                  )}
+                </Link>
+              );
+            })
+          )}
         </nav>
       </aside>
     </>

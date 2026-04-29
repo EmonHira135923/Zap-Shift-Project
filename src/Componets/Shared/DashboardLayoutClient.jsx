@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Aside from "./Aside";
 import Anavvar from "./Anavvar";
+import useAuth from "../utils/Hooks/useAuth";
+import Skeleton from "../Skeltons/SidebarSkeleton";
 
 const DashboardLayoutClient = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-
+  const {loading} = useAuth();
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) setSidebarOpen(false);
@@ -14,7 +17,9 @@ const DashboardLayoutClient = ({ children }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  
+  if(loading) return <Skeleton/>; 
+  
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Aside 

@@ -1,39 +1,49 @@
 import Editpage from "@/Componets/Pages/profile/Editpage";
-import React from "react";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { getUsers } from "@/app/(Backend)/lib/dbConnect";
 
-export const metadata = {
-  title: "Edit Profile",
+export async function generateMetadata() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+  let userName = "User";
 
-  description:
-    "Update your profile information in ZAP-SHIFT-PROJECT. Change personal details, contact info, and account settings securely from your dashboard.",
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+      const userCollection = await getUsers();
+      const user = await userCollection.findOne({ email: decoded.email });
+      userName = user?.name || "User";
+    } catch (error) {
+      // Error handled silently for metadata
+    }
+  }
+  return { title: `${userName} | Edit Profile` };
+}
 
-  keywords: [
-    "edit profile dashboard",
-    "update user profile",
-    "change account details",
-    "profile settings courier",
-    "ZAP SHIFT PROJECT profile update",
-  ],
+const ProfileUpdate = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
 
-  openGraph: {
-    title: "Edit Profile | ZAP-SHIFT-PROJECT",
-    description:
-      "Easily update your personal details and manage your account settings from your dashboard.",
-    url: "https://yourdomain.com/dashboard/profile/edit",
-    siteName: "ZAP-SHIFT-PROJECT",
-    type: "website",
-  },
+  let userData = null;
 
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+      const userCollection = await getUsers();
+      const user = await userCollection.findOne({ email: decoded.email });
 
-const ProfileUpdate = () => {
+      if (user) {
+        userData = JSON.parse(JSON.stringify(user));
+      }
+    } catch (error) {
+      // Error handled silently
+    }
+  }
+
   return (
     <div>
-      <Editpage />
+      <Editpage initialData={userData} />
     </div>
   );
 };
