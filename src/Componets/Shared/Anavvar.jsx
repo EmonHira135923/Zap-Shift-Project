@@ -4,7 +4,6 @@ import Link from "next/link";
 import useAuth from "../utils/Hooks/useAuth";
 import Image from "next/image";
 
-
 const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
   const { logout, user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -19,27 +18,50 @@ const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
   return (
     <div className="flex items-center justify-between h-20 px-4 sm:px-8 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30">
       <div className="flex items-center gap-4">
         {/* Mobile Hamburger - ZapStyle */}
-        <button 
-          onClick={onMenuToggle} 
+        <button
+          onClick={onMenuToggle}
           className="md:hidden p-2.5 text-gray-600 hover:bg-[#D4F06D] hover:text-black rounded-xl transition-all duration-300"
         >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         </button>
 
         {/* Desktop Collapse Toggle */}
-        <button 
-          onClick={onCollapseToggle} 
+        <button
+          onClick={onCollapseToggle}
           className="hidden md:flex p-2 text-gray-400 hover:text-black hover:bg-gray-50 rounded-lg transition-all"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d={
+                collapsed
+                  ? "M13 5l7 7-7 7M5 5l7 7-7 7"
+                  : "M11 19l-7-7 7-7m8 14l-7-7 7-7"
+              }
+            />
           </svg>
         </button>
       </div>
@@ -47,13 +69,19 @@ const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
       <div className="flex items-center gap-3">
         {/* User Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
-          <button 
-            onClick={() => setShowDropdown((v) => !v)} 
+          <button
+            onClick={() => setShowDropdown((v) => !v)}
             className="flex items-center gap-3 p-1.5 pr-3 rounded-full border border-gray-100 hover:border-[#D4F06D] hover:bg-gray-50 transition-all group"
           >
             <div className="h-9 w-9 rounded-full bg-[#D4F06D] border-2 border-white shadow-sm overflow-hidden flex items-center justify-center shrink-0">
               {user?.image ? (
-                <Image height={48} width={48} src={user.image} alt="User" className="h-full w-full object-cover" />
+                <Image
+                  height={48}
+                  width={48}
+                  src={user.image}
+                  alt="User"
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <span className="text-sm font-black text-black">
                   {user?.name?.charAt(0) || "U"}
@@ -68,35 +96,60 @@ const Anavvar = ({ onMenuToggle, onCollapseToggle, collapsed }) => {
                 {user?.role || "Member"}
               </p>
             </div>
-            <svg className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 ${showDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+            <svg
+              className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 ${showDropdown ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
           {showDropdown && (
-            <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl border border-gray-100 shadow-2xl py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
-              {/* Header Info */}
-              <div className="px-5 py-4 border-b border-gray-50 mb-2 bg-[#f9fbf2]/50">
-                <p className="text-[13px] font-black text-gray-900 truncate">{user?.name}</p>
-                <p className="text-[11px] font-medium text-gray-400 truncate">{user?.email}</p>
+            <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-gray-100 shadow-xl py-2 z-50 animate-in fade-in zoom-in duration-200">
+              {/* Compact Header */}
+              <div className="px-4 py-3 border-b border-gray-50 mb-1">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">
+                  Account
+                </p>
+                <p className="text-[13px] font-black text-[#002B36] truncate">
+                  {user?.name}
+                </p>
               </div>
 
-              {/* Menu Links */}
-              <div className="px-2 space-y-1">
-                <Link href="/" className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-gray-600 hover:bg-[#D4F06D] hover:text-black rounded-xl transition-all">
+              {/* Action Links */}
+              <div className="px-2 space-y-0.5">
+                <Link
+                  href="/"
+                  onClick={() => setShowDropdown(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-gray-600 hover:bg-[#f3f4f6] rounded-xl transition-all"
+                >
                   <span className="text-base">🏠</span> Home
                 </Link>
 
-                <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-gray-600 hover:bg-[#D4F06D] hover:text-black rounded-xl transition-all">
-                  <span className="text-base">👤</span> Profile Settings
+                <Link
+                  href="/profile"
+                  onClick={() => setShowDropdown(false)}
+                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-gray-600 hover:bg-[#f3f4f6] rounded-xl transition-all"
+                >
+                  <span className="text-base">👤</span> Profile
                 </Link>
               </div>
 
-              {/* Logout Section */}
-              <div className="mt-3 pt-3 border-t border-gray-50 px-2">
-                <button 
-                  onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-[13px] font-black text-red-500 hover:bg-red-50 rounded-xl transition-all"
+              {/* Logout Button */}
+              <div className="mt-1 pt-1 border-t border-gray-50 px-2">
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-black text-red-500 hover:bg-red-50 rounded-xl transition-all"
                 >
                   <span className="text-base">🚪</span> Sign Out
                 </button>

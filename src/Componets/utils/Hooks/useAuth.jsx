@@ -1,3 +1,4 @@
+"use client";
 import { Authcontext } from "@/Componets/Provider/Provider";
 import React, { use } from "react";
 

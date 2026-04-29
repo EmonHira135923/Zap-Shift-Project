@@ -38,7 +38,7 @@ const ParcelButton = ({ parcel }) => {
 
         {/* Edit Button */}
         <Link
-          href={`/dashboard/update-parcel/${_id}`}
+          href={`/dashboard/parcels/update-parcel/${_id}`}
           title="Edit Parcel"
           className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm"
         >

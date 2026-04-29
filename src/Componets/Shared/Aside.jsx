@@ -11,6 +11,7 @@ import {
   LuUserPlus,
   LuUserCheck,
   LuPackage,
+  LuPackagePlus,
 } from "react-icons/lu";
 import useAuth from "../utils/Hooks/useAuth";
 
@@ -43,12 +44,17 @@ const ROUTES = [
     label: "Manage Parcels",
     icon: <LuPackage className="w-5 h-5" />,
     isDropdown: true,
-    roles: ["admin"],
+    roles: ["admin", "user"],
     subLinks: [
       {
         label: "All Parcels",
         href: "/dashboard/parcels",
         icon: <LuPackage className="w-4 h-4" />,
+      },
+      {
+        label: "Add Parcel",
+        href: "/send-parcel",
+        icon: <LuPackagePlus className="w-4 h-4" />,
       },
     ],
   },
@@ -63,7 +69,7 @@ const ROUTES = [
 const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  
+
   // Default vave sob dropdown bondho thakbe
   const [openMenus, setOpenMenus] = useState({});
 
@@ -71,8 +77,7 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   useEffect(() => {
     const activeRoute = ROUTES.find(
       (route) =>
-        route.isDropdown &&
-        route.subLinks.some((sub) => pathname === sub.href)
+        route.isDropdown && route.subLinks.some((sub) => pathname === sub.href),
     );
     if (activeRoute) {
       setOpenMenus((prev) => ({ ...prev, [activeRoute.label]: true }));
@@ -122,17 +127,23 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[#D4F06D] rounded-lg flex items-center justify-center shrink-0 shadow-sm relative overflow-hidden">
               <div className="absolute inset-0 bg-black/5 rotate-45 translate-x-4"></div>
-              <span className="text-black font-black text-xs relative z-10">ZS</span>
+              <span className="text-black font-black text-xs relative z-10">
+                ZS
+              </span>
             </div>
             {!collapsed && (
-              <span className="font-black text-xl text-[#1A1A1A] tracking-tight">ZapShift</span>
+              <span className="font-black text-xl text-[#1A1A1A] tracking-tight">
+                ZapShift
+              </span>
             )}
           </div>
         </div>
 
         {!collapsed && (
           <div className="px-7 py-2">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Menu</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+              Menu
+            </p>
           </div>
         )}
 
@@ -143,7 +154,9 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
             filteredRoutes.map((route) => {
               if (route.isDropdown) {
                 const isOpen = openMenus[route.label];
-                const isSubActive = route.subLinks.some((sub) => pathname === sub.href);
+                const isSubActive = route.subLinks.some(
+                  (sub) => pathname === sub.href,
+                );
 
                 return (
                   <div key={route.label} className="space-y-1">
@@ -152,11 +165,17 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
                       className={`w-full group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300
                         ${isSubActive ? "bg-gray-50 text-black" : "text-gray-500 hover:bg-gray-50 hover:text-black"}`}
                     >
-                      <span className="group-hover:scale-110 transition-transform">{route.icon}</span>
+                      <span className="group-hover:scale-110 transition-transform">
+                        {route.icon}
+                      </span>
                       {!collapsed && (
                         <>
-                          <span className="text-[14px] font-bold tracking-tight flex-1 text-left">{route.label}</span>
-                          <LuChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                          <span className="text-[14px] font-bold tracking-tight flex-1 text-left">
+                            {route.label}
+                          </span>
+                          <LuChevronDown
+                            className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                          />
                         </>
                       )}
                     </button>
@@ -188,15 +207,21 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
                 <Link
                   key={route.href}
                   href={route.href}
-                  onClick={() => { if (window.innerWidth < 768) onClose(); }}
+                  onClick={() => {
+                    if (window.innerWidth < 768) onClose();
+                  }}
                   className={`group flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 relative
                     ${active ? "bg-[#D4F06D] text-black shadow-lg shadow-[#D4F06D]/20" : "text-gray-500 hover:bg-gray-50 hover:text-black"}`}
                 >
-                  <span className={`transition-transform duration-300 ${active ? "scale-110" : "group-hover:scale-110"}`}>
+                  <span
+                    className={`transition-transform duration-300 ${active ? "scale-110" : "group-hover:scale-110"}`}
+                  >
                     {route.icon}
                   </span>
                   {!collapsed && (
-                    <span className={`text-[14px] font-bold tracking-tight ${active ? "text-black" : "text-gray-600"}`}>
+                    <span
+                      className={`text-[14px] font-bold tracking-tight ${active ? "text-black" : "text-gray-600"}`}
+                    >
                       {route.label}
                     </span>
                   )}

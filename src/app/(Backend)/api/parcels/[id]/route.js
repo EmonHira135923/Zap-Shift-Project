@@ -1,11 +1,68 @@
 import { getParcels } from "@/app/(Backend)/lib/dbConnect";
 import { ObjectId } from "mongodb";
 
+export async function GET(request, { params }) {
+  try {
+    const { id } = await params;
+    const parcelCollection = await getParcels();
+    const result = await parcelCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!result) {
+      return Response.json({ success: false, message: "Parcel not found" }, { status: 404 });
+    }
+
+    return Response.json({ success: true, result });
+  } catch (error) {
+    return Response.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(request, { params }) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const parcelCollection = await getParcels();
+
+    // ১. Sender-er sensitive info block kora (Security)
+    const { senderName, senderEmail, senderPhone, _id, ...updateData } = body;
+
+    // ২. Database Update
+    // Frontend theke asha data-te ekhon cost, parcelWeight sob thakbe
+    const result = await parcelCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...updateData, // Ekhane cost: liveCost auto chole asbe
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return Response.json(
+        { success: false, message: "Parcel not found" },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      message: "Parcel updated successfully!",
+    });
+
+  } catch (error) {
+    return Response.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(request, { params }) {
   try {
     const parcelCollections = await getParcels();
     
-    // params-ke await kora dorkar Next.js-er current version e
+    // params-ke await kora dorkar .js-er current version e
     const resolvedParams = await params; 
     const id = resolvedParams.id; 
 
