@@ -1,22 +1,15 @@
-console.log("PATCH HIT");
-
 import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { getUsers } from "@/app/(Backend)/lib/dbConnect";
-import { v2 as cloudinary } from "cloudinary";
-
-// Cloudinary Config
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { connectCloudinary } from "@/app/(Backend)/lib/connectCloudinary";
 
 export async function PATCH(request, { params }) {
   try {
+    await connectCloudinary();
     const { id } = await params; // ✅ fix
     const body = await request.json();
+
 
     // 🔐 Token Check
     const cookieStore = await cookies();
