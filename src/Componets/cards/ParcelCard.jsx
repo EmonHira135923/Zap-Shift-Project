@@ -6,12 +6,21 @@ import ParcelButton from "../buttons/ParcelButton";
 const ParcelCard = ({ parcels }) => {
   return (
     <div className="w-full bg-white border border-gray-100 rounded-[2.5rem] shadow-sm overflow-hidden">
-      {/* Mobile Swipe Container */}
-      <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left border-collapse min-w-[600px]">
+      {/* Horizontal scroll wrapper — prevents table from breaking layout on mobile */}
+      <div
+        className="overflow-x-auto"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <table
+          className="text-left border-collapse"
+          style={{ minWidth: "600px", width: "100%" }}
+        >
           <thead>
             <tr className="bg-gray-50/50">
-              <th className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] w-16">
+              <th
+                className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]"
+                style={{ width: "56px" }}
+              >
                 No
               </th>
               <th className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -20,7 +29,11 @@ const ParcelCard = ({ parcels }) => {
               <th className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">
                 Price
               </th>
-              <th className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">
+              {/* Fixed width column — prevents buttons from stretching full width */}
+              <th
+                className="px-6 py-5 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] text-right"
+                style={{ width: "140px" }}
+              >
                 Actions
               </th>
             </tr>
@@ -32,7 +45,7 @@ const ParcelCard = ({ parcels }) => {
                 className="group hover:bg-gray-50/50 transition-colors"
               >
                 {/* Serial Number */}
-                <td className="px-6 py-4">
+                <td className="px-6 py-4" style={{ width: "56px" }}>
                   <span className="text-sm font-bold text-gray-400">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -65,8 +78,8 @@ const ParcelCard = ({ parcels }) => {
                   </div>
                 </td>
 
-                {/* Actions */}
-                <td className="px-6 py-4">
+                {/* Actions — fixed width so buttons never stretch on mobile */}
+                <td className="px-6 py-4" style={{ width: "140px" }}>
                   <ParcelButton parcel={parcel} />
                 </td>
               </tr>
@@ -78,12 +91,11 @@ const ParcelCard = ({ parcels }) => {
       {/* Mobile swipe hint */}
       <div className="md:hidden bg-gray-50 py-2 text-center border-t border-gray-100">
         <p className="text-[10px] text-gray-400 font-bold uppercase animate-pulse">
-          ← Swipe to see Actions →
+          ← Swipe to see actions →
         </p>
       </div>
     </div>
   );
 };
 
-// FIX: was "export default Parcel" (broken) — corrected to ParcelCard
 export default ParcelCard;

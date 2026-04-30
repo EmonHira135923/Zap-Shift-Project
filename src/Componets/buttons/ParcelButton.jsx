@@ -25,35 +25,34 @@ const ParcelButton = ({ parcel }) => {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-end gap-2">
-        {/* View Button */}
-        <Link
-          href={`/dashboard/parcels/${_id}`}
-          title="View Details"
-          className="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-        >
-          <LuEye size={16} />
-        </Link>
+    /* inline-flex keeps the button group tight — never stretches full width */
+    <div className="inline-flex items-center justify-end gap-2 w-full">
+      {/* View Button */}
+      <Link
+        href={`/dashboard/parcels/${_id}`}
+        title="View Details"
+        className="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm flex-shrink-0"
+      >
+        <LuEye size={16} />
+      </Link>
 
-        {/* Edit Button */}
-        <Link
-          href={`/dashboard/parcels/update-parcel/${_id}`}
-          title="Edit Parcel"
-          className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm"
-        >
-          <LuPencilLine size={16} />
-        </Link>
+      {/* Edit Button */}
+      <Link
+        href={`/dashboard/parcels/update-parcel/${_id}`}
+        title="Edit Parcel"
+        className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm flex-shrink-0"
+      >
+        <LuPencilLine size={16} />
+      </Link>
 
-        {/* Delete Trigger Button */}
-        <button
-          onClick={() => document.getElementById(`modal_${_id}`).showModal()}
-          title="Delete Parcel"
-          className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
-        >
-          <LuTrash2 size={16} />
-        </button>
-      </div>
+      {/* Delete Trigger Button */}
+      <button
+        onClick={() => document.getElementById(`modal_${_id}`).showModal()}
+        title="Delete Parcel"
+        className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm flex-shrink-0"
+      >
+        <LuTrash2 size={16} />
+      </button>
 
       {/* DaisyUI Confirmation Modal */}
       <dialog
