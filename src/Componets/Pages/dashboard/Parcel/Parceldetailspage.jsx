@@ -27,7 +27,6 @@ const Parceldetailspage = ({ id }) => {
   if (isLoading)
     return (
       <div className="max-w-6xl mx-auto p-4 sm:p-8 animate-pulse">
-        {/* Hero Skeleton */}
         <div className="h-64 bg-gray-200 rounded-[2.5rem] mb-8" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
@@ -38,6 +37,12 @@ const Parceldetailspage = ({ id }) => {
         </div>
       </div>
     );
+
+  const createdAt = parcel?.createdAt?.$date
+    ? new Date(parcel.createdAt.$date).toLocaleDateString()
+    : parcel?.createdAt
+      ? new Date(parcel.createdAt).toLocaleDateString()
+      : "N/A";
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-8 pb-20">
@@ -57,12 +62,7 @@ const Parceldetailspage = ({ id }) => {
           </h1>
           <div className="flex items-center gap-4 text-blue-100/60 font-medium">
             <span className="flex items-center gap-2">
-              <FiCalendar /> Created:{" "}
-              {parcel?.createdAt?.$date
-                ? new Date(parcel.createdAt.$date).toLocaleDateString()
-                : parcel?.createdAt
-                  ? new Date(parcel.createdAt).toLocaleDateString()
-                  : "N/A"}
+              <FiCalendar /> Created: {createdAt}
             </span>
           </div>
         </div>
@@ -131,7 +131,7 @@ const Parceldetailspage = ({ id }) => {
             </div>
           </div>
 
-          {/* INSTRUCTIONS & METADATA */}
+          {/* DELIVERY LOGISTICS */}
           <div className="bg-[#f9fafb] p-8 rounded-[2rem] border border-gray-100">
             <div className="flex items-center gap-3 mb-8">
               <FiInfo className="text-[#8da13d]" />
@@ -160,7 +160,7 @@ const Parceldetailspage = ({ id }) => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: BILLING CARD */}
+        {/* RIGHT COLUMN: BILLING */}
         <div className="lg:col-span-1">
           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl sticky top-24 ring-4 ring-[#C6EB71]/10">
             <h3 className="font-black text-[#002B36] text-2xl mb-8">
@@ -172,14 +172,8 @@ const Parceldetailspage = ({ id }) => {
                 label="Parcel Weight"
                 value={`${parcel?.parcelWeight} KG`}
               />
-              <SummaryRow
-                label="Region From"
-                value={`${parcel?.senderDistrict}`}
-              />
-              <SummaryRow
-                label="Region To"
-                value={`${parcel?.receiverDistrict}`}
-              />
+              <SummaryRow label="Region From" value={parcel?.senderDistrict} />
+              <SummaryRow label="Region To" value={parcel?.receiverDistrict} />
 
               <div className="my-8 py-6 border-y border-dashed border-gray-200">
                 <div className="flex justify-between items-end">
@@ -203,7 +197,7 @@ const Parceldetailspage = ({ id }) => {
   );
 };
 
-// Helper Components for Clean Code
+// Helper Components
 const DetailItem = ({ label, value, icon }) => (
   <div>
     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">

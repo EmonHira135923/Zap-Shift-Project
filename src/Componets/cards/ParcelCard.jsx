@@ -26,13 +26,12 @@ const ParcelCard = ({ parcels }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {/* Index parameter add kora hoyeche ekhane */}
             {parcels.map((parcel, index) => (
               <tr
                 key={parcel._id}
                 className="group hover:bg-gray-50/50 transition-colors"
               >
-                {/* Serial Number Column */}
+                {/* Serial Number */}
                 <td className="px-6 py-4">
                   <span className="text-sm font-bold text-gray-400">
                     {String(index + 1).padStart(2, "0")}
@@ -66,9 +65,8 @@ const ParcelCard = ({ parcels }) => {
                   </div>
                 </td>
 
-                {/* Actions: View, Edit, Delete */}
+                {/* Actions */}
                 <td className="px-6 py-4">
-                  {/* Ekhaner component-e parcel pass kora lagte pare unique ID-r jonno */}
                   <ParcelButton parcel={parcel} />
                 </td>
               </tr>
@@ -77,7 +75,7 @@ const ParcelCard = ({ parcels }) => {
         </table>
       </div>
 
-      {/* Swipe Indicator for Mobile */}
+      {/* Mobile swipe hint */}
       <div className="md:hidden bg-gray-50 py-2 text-center border-t border-gray-100">
         <p className="text-[10px] text-gray-400 font-bold uppercase animate-pulse">
           ← Swipe to see Actions →
@@ -87,4 +85,5 @@ const ParcelCard = ({ parcels }) => {
   );
 };
 
+// FIX: was "export default Parcel" (broken) — corrected to ParcelCard
 export default ParcelCard;

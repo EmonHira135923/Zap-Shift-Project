@@ -10,13 +10,13 @@ const ParcelButton = ({ parcel }) => {
   const { _id, parcelName } = parcel;
   const queryClient = useQueryClient();
 
-  const handledelete = async (id) => {
+  const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`/api/parcels/${id}`);
       if (res.data) {
         toast.success("Parcel deleted successfully!");
-        queryClient.invalidateQueries(["parcels"]); // UI refresh korbe
-        document.getElementById(`modal_${id}`).close(); // Modal bondho korbe
+        queryClient.invalidateQueries(["parcels"]);
+        document.getElementById(`modal_${id}`).close();
       }
     } catch (error) {
       toast.error("Failed to delete parcel");
@@ -55,33 +55,36 @@ const ParcelButton = ({ parcel }) => {
         </button>
       </div>
 
-      {/* DaisyUI Modal - Unique ID diye */}
-      <dialog id={`modal_${_id}`} className="modal modal-bottom sm:modal-middle">
+      {/* DaisyUI Confirmation Modal */}
+      <dialog
+        id={`modal_${_id}`}
+        className="modal modal-bottom sm:modal-middle"
+      >
         <div className="modal-box bg-white rounded-[2rem]">
           <h3 className="font-black text-xl text-gray-800">Are you sure?</h3>
           <p className="py-4 text-gray-500 font-medium">
-            Do you really want to delete <span className="text-red-500 font-bold">"{parcelName}"</span>? 
-            This action cannot be undone.
+            Do you really want to delete{" "}
+            <span className="text-red-500 font-bold">"{parcelName}"</span>? This
+            action cannot be undone.
           </p>
-          
+
           <div className="modal-action gap-3">
             <form method="dialog" className="flex gap-2">
-              {/* Close Button */}
               <button className="btn bg-gray-100 hover:bg-gray-200 border-none text-gray-600 rounded-xl px-6">
                 Cancel
               </button>
             </form>
-            
-            {/* Delete Confirm Button */}
-            <button 
-              onClick={() => handledelete(_id)}
+
+            <button
+              onClick={() => handleDelete(_id)}
               className="btn bg-red-500 hover:bg-red-600 border-none text-white rounded-xl px-6"
             >
               Confirm Delete
             </button>
           </div>
         </div>
-        {/* Modal Backdrop (Click outside to close) */}
+
+        {/* Backdrop */}
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>

@@ -61,11 +61,12 @@ const Updateparcelpage = () => {
       parcelName: form.parcelName.value,
       parcelWeight: weight,
       receiverName: form.receiverName.value,
+      receiverEmail: form.receiverEmail.value, // FIX: was missing
       receiverPhone: form.receiverPhone.value,
       receiverAddress: form.receiverAddress.value,
       pickupInstruction: form.pickupInstruction.value,
       deliveryInstruction: form.deliveryInstruction.value,
-      cost: currentCost, // Frontend calculation backend-e pathiye dichchi
+      cost: currentCost,
     });
 
     document.getElementById("confirm_modal").showModal();
@@ -75,7 +76,7 @@ const Updateparcelpage = () => {
     try {
       const res = await axios.patch(`/api/parcels/${id}`, tempData);
       if (res.data.success) {
-        toast.success(`Parcel Updated Successfully!`);
+        toast.success("Parcel Updated Successfully!");
         queryClient.invalidateQueries(["parcels"]);
         refetch();
         document.getElementById("confirm_modal").close();
@@ -147,30 +148,34 @@ const Updateparcelpage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-10">
-            {/* --- Sender Section --- */}
+            {/* --- Sender Section (read-only) --- */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold border-b-2 border-[#1e3a8a] pb-2 mb-6 text-[#1e3a8a]">
                 Sender Details
               </h2>
               <input
-                value={parcel?.senderName}
+                value={parcel?.senderName || ""}
                 readOnly
+                placeholder="Sender Name"
                 className="input w-full h-12 bg-gray-50 rounded-lg text-gray-400 border-none"
               />
               <input
-                value={parcel?.senderEmail}
+                value={parcel?.senderEmail || ""}
                 readOnly
+                placeholder="Sender Email"
                 className="input w-full h-12 bg-gray-50 rounded-lg text-gray-400 border-none"
               />
               <input
-                value={parcel?.senderPhone}
+                value={parcel?.senderPhone || ""}
                 readOnly
+                placeholder="Sender Phone"
                 className="input w-full h-12 bg-gray-50 rounded-lg text-gray-400 border-none"
               />
 
+              {/* FIX: was showing senderDistrict twice — now shows city + district */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-400 border border-gray-100">
-                  {parcel?.senderDistrict}
+                  {parcel?.senderCity || parcel?.senderDistrict}
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-400 border border-gray-100">
                   {parcel?.senderDistrict}
@@ -189,7 +194,7 @@ const Updateparcelpage = () => {
               </div>
             </div>
 
-            {/* --- Receiver Section --- */}
+            {/* --- Receiver Section (editable) --- */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold border-b-2 border-[#1e3a8a] pb-2 mb-6 text-[#1e3a8a]">
                 Receiver Details
@@ -197,19 +202,31 @@ const Updateparcelpage = () => {
               <input
                 name="receiverName"
                 defaultValue={parcel?.receiverName}
+                placeholder="Receiver Name"
+                className="input w-full h-12 bg-[#eef2ff] rounded-lg border-none focus:ring-2 focus:ring-blue-100"
+                required
+              />
+              {/* FIX: receiverEmail was missing entirely */}
+              <input
+                name="receiverEmail"
+                defaultValue={parcel?.receiverEmail}
+                placeholder="Receiver Email"
+                type="email"
                 className="input w-full h-12 bg-[#eef2ff] rounded-lg border-none focus:ring-2 focus:ring-blue-100"
                 required
               />
               <input
                 name="receiverPhone"
                 defaultValue={parcel?.receiverPhone}
+                placeholder="Receiver Phone"
                 className="input w-full h-12 bg-[#eef2ff] rounded-lg border-none focus:ring-2 focus:ring-blue-100"
                 required
               />
 
+              {/* FIX: was showing receiverDistrict twice — now shows city + district */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-500 border border-gray-100">
-                  {parcel?.receiverDistrict}
+                  {parcel?.receiverCity || parcel?.receiverDistrict}
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg text-sm font-medium text-gray-500 border border-gray-100">
                   {parcel?.receiverDistrict}
@@ -253,48 +270,25 @@ const Updateparcelpage = () => {
         </form>
       </div>
 
-      {/* --- PREMIUM CONFIRMATION MODAL --- */}
+      {/* --- CONFIRMATION MODAL --- */}
       <dialog id="confirm_modal" className="modal modal-middle">
         <div className="modal-box max-w-[450px] bg-white rounded-[2.5rem] p-10 shadow-2xl border-none overflow-hidden">
-          {/* Modal Header */}
           <h2 className="text-[26px] font-bold text-[#0f4c5c] mb-8 leading-tight text-center sm:text-left">
             Confirm Your Booking
           </h2>
 
-          {/* Details List */}
           <div className="space-y-5">
-            <div className="flex justify-between items-center text-[15px]">
-              <span className="text-gray-500 font-medium">Parcel Name:</span>
-              <span className="text-[#1e3a8a] font-bold">
-                {tempData.parcelName || "N/A"}
-              </span>
-            </div>
+            <ModalRow
+              label="Parcel Name"
+              value={tempData.parcelName || "N/A"}
+            />
+            <ModalRow label="Weight" value={`${tempData.parcelWeight} KG`} />
+            <ModalRow label="Receiver" value={tempData.receiverName || "N/A"} />
+            <ModalRow label="From" value={parcel?.senderDistrict} />
+            <ModalRow label="To" value={parcel?.receiverDistrict} />
 
-            <div className="flex justify-between items-center text-[15px]">
-              <span className="text-gray-500 font-medium">Weight:</span>
-              <span className="text-[#1e3a8a] font-bold">
-                {tempData.parcelWeight} KG
-              </span>
-            </div>
+            <div className="border-t border-dashed border-gray-200 my-6" />
 
-            <div className="flex justify-between items-center text-[15px]">
-              <span className="text-gray-500 font-medium">From:</span>
-              <span className="text-[#1e3a8a] font-bold">
-                {parcel?.senderDistrict}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center text-[15px]">
-              <span className="text-gray-500 font-medium">To:</span>
-              <span className="text-[#1e3a8a] font-bold">
-                {parcel?.receiverDistrict}
-              </span>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-dashed border-gray-200 my-6"></div>
-
-            {/* Cost Section */}
             <div className="flex justify-between items-center">
               <span className="text-[17px] font-bold text-gray-700">
                 Total Delivery Charge:
@@ -306,7 +300,6 @@ const Updateparcelpage = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="mt-10 flex items-center gap-4">
             <form method="dialog" className="flex-1">
               <button className="w-full h-14 rounded-2xl text-gray-400 font-bold hover:bg-gray-50 transition-colors">
@@ -323,7 +316,6 @@ const Updateparcelpage = () => {
           </div>
         </div>
 
-        {/* Backdrop click to close */}
         <form
           method="dialog"
           className="modal-backdrop bg-black/20 backdrop-blur-sm"
@@ -334,5 +326,12 @@ const Updateparcelpage = () => {
     </div>
   );
 };
+
+const ModalRow = ({ label, value }) => (
+  <div className="flex justify-between items-center text-[15px]">
+    <span className="text-gray-500 font-medium">{label}:</span>
+    <span className="text-[#1e3a8a] font-bold">{value}</span>
+  </div>
+);
 
 export default Updateparcelpage;
