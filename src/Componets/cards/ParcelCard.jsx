@@ -87,13 +87,6 @@ const ParcelCard = ({ parcels }) => {
           </tbody>
         </table>
       </div>
-
-      {/* Mobile swipe hint */}
-      <div className="md:hidden bg-gray-50 py-2 text-center border-t border-gray-100">
-        <p className="text-[10px] text-gray-400 font-bold uppercase animate-pulse">
-          ← Swipe to see actions →
-        </p>
-      </div>
     </div>
   );
 };
