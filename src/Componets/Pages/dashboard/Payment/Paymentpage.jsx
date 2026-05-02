@@ -2,13 +2,13 @@
 import PaymentSkeleton from "@/Componets/Skeltons/PaymentSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { LuCreditCard, LuShieldCheck } from "react-icons/lu";
 
 const Paymentpage = () => {
   const { id } = useParams();
-
+  const router = useRouter();
   const {
     isLoading,
     data: parcel,
@@ -44,7 +44,7 @@ const Paymentpage = () => {
     };
     const res = await axios.post(`/api/checkout`, paymentinfo);
     console.log(res.data.result);
-    window.location.href = res.data.url;
+    router.push(res.data.url);
   };
 
   return (

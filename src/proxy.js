@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const privateRoutes = ["/be-a-rider", "/send-parcel", "/dashboard", "/profile"];
-const adminRoutes = ["/dashboard/users","/dashboard/users/add"];
+const adminRoutes = ["/dashboard/users", "/dashboard/users/add"];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;
@@ -18,9 +18,21 @@ export async function proxy(request) {
     reqpath.startsWith(route),
   );
 
-  const isAdminRoute = adminRoutes.some((route) =>
-    reqpath.startsWith(route),
-  );
+  const isAdminRoute = adminRoutes.some((route) => reqpath.startsWith(route));
+
+  const isPaymentRoute =
+    reqpath.includes("payment-success") || reqpath.includes("payment-cancel");
+
+  // isAuthenticated না থাকলেও যদি পেমেন্ট রুট হয়, তবে তাকে রিডাইরেক্ট করো না
+  if (!isAuthenticated && isPrivateRoute) {
+    if (isPaymentRoute) {
+      return NextResponse.next(); // এখানে ঢুকতে দাও, আমরা পেজের ভেতর চেক করবো
+    }
+
+    const loginurl = new URL("/auth/login", request.url);
+    loginurl.searchParams.set("callbackUrl", reqpath);
+    return NextResponse.redirect(loginurl);
+  }
 
   // Login না থাকলে private route block
   if (!isAuthenticated && isPrivateRoute) {
@@ -53,8 +65,7 @@ export async function proxy(request) {
   // Login করা থাকলে auth pages block
   if (
     isAuthenticated &&
-    (reqpath.startsWith("/auth/login") ||
-      reqpath.startsWith("/auth/register"))
+    (reqpath.startsWith("/auth/login") || reqpath.startsWith("/auth/register"))
   ) {
     console.log("Already logged in, redirecting dashboard");
     return NextResponse.redirect(new URL("/dashboard", request.url));

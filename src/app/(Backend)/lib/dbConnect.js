@@ -40,3 +40,9 @@ export const getParcels = async () => {
   const database = await connectDB();
   return database.collection("Parcels");
 };
+
+// Payment
+export const getPayments = async () => {
+  const database = await connectDB();
+  return database.collection("Payments");
+};
