@@ -2,10 +2,31 @@ import { getUsers } from "@/app/(Backend)/lib/dbConnect";
 import { ObjectId } from "mongodb";
 import cloudinary from "cloudinary";
 import { connectCloudinary } from "@/app/(Backend)/lib/connectCloudinary";
+import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
+import { verifyAdmin } from "@/app/(Backend)/middlewares/IsAdmin";
 
 // ১. GET USER DETAILS
 export async function GET(request, { params }) {
   try {
+    const users = await verifyToken();
+
+    if (!users) {
+      return Response.json(
+        { success: false, message: "Unauthoraized" },
+        { status: 401 },
+      );
+    }
+
+    // Admin Check
+    const isAdmin = await verifyAdmin();
+
+    if (!isAdmin) {
+      return Response.json(
+        { success: false, message: "Forbidden - Admin Only Access" },
+        { status: 403 },
+      );
+    }
+
     const { id } = await params; // Next.js 15+ এ params await করতে হয়
 
     if (!ObjectId.isValid(id)) {
@@ -29,6 +50,25 @@ export async function GET(request, { params }) {
 // ২. UPDATE USER ROLE (PATCH)
 export async function PATCH(request, { params }) {
   try {
+    const user = await verifyToken();
+
+    if (!user) {
+      return Response.json(
+        { success: false, message: "Unauthoraized" },
+        { status: 401 },
+      );
+    }
+
+    // Admin Check
+    const isAdmin = await verifyAdmin();
+
+    if (!isAdmin) {
+      return Response.json(
+        { success: false, message: "Forbidden - Admin Only Access" },
+        { status: 403 },
+      );
+    }
+
     const usersCollection = await getUsers();
     const { role } = await request.json(); // বডি থেকে শুধু রোল নিন
     const { id } = await params; // ইউআরএল থেকে আইডি নিন
@@ -61,6 +101,25 @@ export async function PATCH(request, { params }) {
 // ৩. DELETE USER (DELETE)
 export async function DELETE(request, { params }) {
   try {
+    const user = await verifyToken();
+
+    if (!user) {
+      return Response.json(
+        { success: false, message: "Unauthoraized" },
+        { status: 401 },
+      );
+    }
+
+    // Admin Check
+    const isAdmin = await verifyAdmin();
+
+    if (!isAdmin) {
+      return Response.json(
+        { success: false, message: "Forbidden - Admin Only Access" },
+        { status: 403 },
+      );
+    }
+    
     const { id } = await params;
 
     if (!id || !ObjectId.isValid(id)) {

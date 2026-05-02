@@ -14,8 +14,8 @@ const Usersdetailspage = ({ user }) => {
            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
               <div className="relative w-28 h-28">
                 <Image
-                  src={user.image}
-                  alt={user.name}
+                  src={user.image || "https://i.ibb.co/TBPXQQ0F/users.png"}
+                  alt={user.name || "users"}
                   fill
                   className="rounded-3xl object-cover border-4 border-white shadow-xl bg-white"
                 />

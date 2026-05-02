@@ -1,47 +1,78 @@
-import { getUsers } from "../../../lib/dbConnect";
+import { getUsers } from "@/app/(Backend)/lib/dbConnect";
+import { verifyAdmin } from "@/app/(Backend)/middlewares/IsAdmin";
+import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 import bcrypt from "bcrypt";
 
 export async function POST(request) {
   try {
     const usersCollection = await getUsers();
     const body = await request.json();
-    const { name, email, password, image, phone } = body;
+    const { name, email, password, image, phone, token } = body;
 
-    // ১. ইমেইল দিয়ে ইউজার খুঁজুন
+    // ১. ইমেইল দিয়ে ইউজার খুঁজুন
     const existingUser = await usersCollection.findOne({ email });
 
-    // ২. যদি ইউজার আগে থেকেই থাকে এবং তার পাসওয়ার্ড অলরেডি সেট করা থাকে
+    // ২. ইনভাইটেশন টোকেন চেক (যদি টোকেন পাঠানো হয়)
+    if (token) {
+      const invitedUser = await usersCollection.findOne({
+        email,
+        invitationToken: token,
+        invitationExpires: { $gt: new Date() }
+      });
+
+      if (!invitedUser) {
+        return Response.json(
+          { success: false, message: "Invalid or expired invitation token." },
+          { status: 400 }
+        );
+      }
+
+      // টোকেন সঠিক হলে পাসওয়ার্ড হ্যাশ করে ডাটা আপডেট করুন
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await usersCollection.updateOne(
+        { email },
+        {
+          $set: {
+            name,
+            password: hashedPassword,
+            image,
+            phone,
+            provider: "credentials",
+            updatedAt: new Date(),
+          },
+          $unset: { invitationToken: "", invitationExpires: "" } // টোকেন মুছে ফেলা
+        }
+      );
+
+      return Response.json({ success: true, message: "Registration completed via invitation!" });
+    }
+
+    // ৩. সাধারণ রেজিস্ট্রেশন লজিক (টোকেন ছাড়া)
     if (existingUser && existingUser.password) {
       return Response.json(
-        {
-          success: false,
-          message: "User already exists with this email and password.",
-        },
-        { status: 400 },
+        { success: false, message: "User already exists with this email." },
+        { status: 400 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (existingUser) {
-      // ৩. ইউজার আগে সোশ্যাল (Google/GitHub) দিয়ে ঢুকেছিল, এখন পাসওয়ার্ড সেট করছে
+      // সোশ্যাল ইউজার এখন পাসওয়ার্ড সেট করছে
       await usersCollection.updateOne(
         { email },
         {
           $set: {
             password: hashedPassword,
             phone: phone,
-            provider: "credentials", // প্রোভাইডার ক্রেডিয়েন্সিয়াল হিসেবেও গণ্য হবে
+            provider: "credentials",
             updatedAt: new Date(),
           },
-        },
+        }
       );
-      return Response.json({
-        success: true,
-        message: "Password added to your existing social account.",
-      });
+      return Response.json({ success: true, message: "Password added to social account." });
     } else {
-      // ৪. সম্পূর্ণ নতুন ইউজার
+      // সম্পূর্ণ নতুন সাধারণ ইউজার
       const newUser = {
         name,
         email,
@@ -54,29 +85,27 @@ export async function POST(request) {
         updatedAt: new Date(),
       };
       await usersCollection.insertOne(newUser);
-      return Response.json({
-        success: true,
-        message: "Registration successful",
-      });
+      return Response.json({ success: true, message: "Registration successful" });
     }
   } catch (err) {
-    return Response.json(
-      { success: false, error: err.message },
-      { status: 500 },
-    );
+    return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }
 
 // GET Method (সব ইউজার দেখার জন্য)
 export async function GET() {
   try {
+    const user = await verifyToken();
+    const isAdmin = await verifyAdmin();
+
+    if (!user || !isAdmin) {
+      return Response.json({ success: false, message: "Unauthorized" }, { status: 403 });
+    }
+
     const usersCollection = await getUsers();
     const result = await usersCollection.find({}).toArray();
     return Response.json({ success: true, message: result }, { status: 200 });
   } catch (err) {
-    return Response.json(
-      { success: false, error: err.message },
-      { status: 500 },
-    );
+    return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }

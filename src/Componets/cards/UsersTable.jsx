@@ -35,8 +35,9 @@ const UsersTable = ({ users, isLoading }) => {
                       <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10">
                           <Image
-                            src={user.image}
-                            alt={user.name}
+                            // If user.image is empty or null, use a fallback placeholder
+                            src={user.image || "https://i.ibb.co/TBPXQQ0F/users.png"}
+                            alt={user.name || "User profile"}
                             fill
                             className="rounded-lg object-cover bg-slate-100"
                           />
@@ -72,7 +73,7 @@ const UsersTable = ({ users, isLoading }) => {
 
                     {/* Actions */}
                     <td className="px-6 py-4 text-right">
-                        <UsersButton user={user} />
+                      <UsersButton user={user} />
                     </td>
                   </tr>
                 ))}
