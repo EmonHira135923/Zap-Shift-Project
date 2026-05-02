@@ -1,66 +1,73 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose"; // Next.js Edge Runtime-এর জন্য jose ব্যবহার করা সেরা
+import { jwtVerify } from "jose";
 
-const privateRoutes = ["/be-a-rider", "/send-parcel" ,"/dashboard", "/profile"];
+const privateRoutes = ["/be-a-rider", "/send-parcel", "/dashboard", "/profile"];
+const adminRoutes = ["/dashboard/users"];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;
+  const accessToken = request.cookies.get("accessToken")?.value;
 
-  // ১. কুকি থেকে টোকেনটি বের করা
-  const nextAuthToken = request.cookies.get("next-auth.session-token")?.value;
-  const customToken = request.cookies.get("accessToken")?.value;
+  const nextAuthToken =
+    request.cookies.get("next-auth.session-token")?.value ||
+    request.cookies.get("__Secure-next-auth.session-token")?.value;
 
-  const tokenValue = nextAuthToken || customToken;
-  const isAuthenticated = Boolean(tokenValue);
+  const isAuthenticated = Boolean(accessToken || nextAuthToken);
 
-  // ২. প্রাইভেট রুট চেক
   const isPrivateRoute = privateRoutes.some((route) =>
     reqpath.startsWith(route),
   );
 
-  console.log("Checking route:", reqpath, "| Logged In:", isAuthenticated);
+  const isAdminRoute = adminRoutes.some((route) =>
+    reqpath.startsWith(route),
+  );
 
-  // ৩. যদি লগইন না থাকে এবং প্রাইভেট রুটে যেতে চায়
+  // Login না থাকলে private route block
   if (!isAuthenticated && isPrivateRoute) {
-    const loginurl = new URL("/auth/login",request.url);
-    loginurl.searchParams.set("callbackUrl",reqpath)
+    const loginurl = new URL("/auth/login", request.url);
+    loginurl.searchParams.set("callbackUrl", reqpath);
     return NextResponse.redirect(loginurl);
   }
 
-  // ৪. টোকেন ডিকোড এবং রোল ভ্যালিডেশন
-  if (isAuthenticated && tokenValue) {
+  // Admin route protection (only custom accessToken দিয়ে role check)
+  if (isAdminRoute) {
+    if (!accessToken) {
+      return NextResponse.redirect(new URL("/forbidden", request.url));
+    }
+
     try {
-      // আপনার কাস্টম টোকেনটি ভেরিফাই করার জন্য
-      // দ্রষ্টব্য: secret টিকে TextEncoder দিয়ে এনকোড করতে হবে
       const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
 
-      // এটি টোকেন ভেরিফাই করবে এবং পেলোড দিবে
-      const { payload } = await jwtVerify(tokenValue, secret).catch(() => ({
-        payload: null,
-      }));
+      const { payload } = await jwtVerify(accessToken, secret);
 
-      const isUser = payload?.role === "user";
       const isAdmin = payload?.role === "admin";
 
-      if (payload) {
-        console.log("User Role:",isUser);
-        console.log("Admin Role:",isAdmin);
-
-        // if (reqpath.startsWith("/dashboard") && payload.role !== "admin") {
-        //   console.log("Access Denied: Not an Admin");
-        //   return NextResponse.redirect(new URL("/forbidden", request.url));
-        // }
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/forbidden", request.url));
       }
     } catch (error) {
-      // NextAuth টোকেন হলে এটি এরর দিতে পারে, তাই আমরা ইগনোর করতে পারি
-      console.log("Token check skipped or failed.");
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     }
   }
 
+  // Login করা থাকলে auth pages block
+  if (
+    isAuthenticated &&
+    (reqpath.startsWith("/auth/login") ||
+      reqpath.startsWith("/auth/register"))
+  ) {
+    console.log("Already logged in, redirecting dashboard");
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
   return NextResponse.next();
 }
 
-// ফাইলটির নাম অবশ্যই middleware.js হতে হবে
 export const config = {
-  matcher: ["/be-a-rider/:path*", "/send-parcel/:path*", "/dashboard/:path*", "/profile/:path*"],
+  matcher: [
+    "/be-a-rider/:path*",
+    "/send-parcel/:path*",
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/auth/:path*",
+  ],
 };

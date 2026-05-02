@@ -60,7 +60,7 @@ const Editpage = ({ initialData }) => {
 
       if (response.data.success) {
         toast.success("Profile Updated!");
-        router.push("/profile");
+        router.push("/");
         router.refresh();
       }
     } catch (error) {
