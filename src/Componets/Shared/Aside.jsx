@@ -24,7 +24,7 @@ const ROUTES = [
     label: "Dashboard",
     href: "/dashboard",
     icon: <LuLayoutDashboard className="w-5 h-5" />,
-    roles: ["admin", "user","rider"],
+    roles: ["admin", "user", "rider"],
   },
   {
     label: "Manage Users",
@@ -48,7 +48,7 @@ const ROUTES = [
     label: "Manage Parcels",
     icon: <LuPackage className="w-5 h-5" />,
     isDropdown: true,
-    roles: ["admin", "user","rider"],
+    roles: ["admin", "user", "rider"],
     subLinks: [
       {
         label: "All Parcels",
@@ -64,53 +64,50 @@ const ROUTES = [
   },
   {
     label: "Manage Payment",
-    icon: <LuWallet className="w-5 h-5" />, // পেমেন্টের জন্য ওয়ালেট বা ক্রেডিট কার্ড আইকন
+    icon: <LuWallet className="w-5 h-5" />,
     isDropdown: true,
-    roles: ["admin", "user","rider"],
+    roles: ["admin", "user", "rider"],
     subLinks: [
       {
         label: "Payment History",
         href: "/dashboard/payment/history",
-        icon: <LuHistory className="w-4 h-4" />, // হিস্টোরি আইকন
+        icon: <LuHistory className="w-4 h-4" />,
       },
     ],
   },
-{
-  label: "Manage Riders",
-  icon: <Motorbike className="w-5 h-5" />, 
-  isDropdown: true,
-  roles: ["admin", "user", "rider"], // মেইন মেনু সবাই দেখতে পাবে
-  subLinks: [
-    {
-      label: "All Riders",
-      href: "/dashboard/rider/all-riders",
-      icon: <FiUsers className="w-4 h-4" />, 
-      roles: ["admin"], // এটি শুধুমাত্র অ্যাডমিন দেখতে পাবে
-    },
-    {
-      label: "Be a Rider", // Add Rider হিসেবে কাজ করবে
-      href: "/be-a-rider",
-      icon: <FiPlusCircle className="w-4 h-4" />, 
-      roles: ["admin", "user", "rider"], // সবাই এক্সেস করতে পারবে
-    },
-  ],
-},
+  {
+    label: "Manage Riders",
+    icon: <Motorbike className="w-5 h-5" />,
+    isDropdown: true,
+    roles: ["admin", "user", "rider"],
+    subLinks: [
+      {
+        label: "All Riders",
+        href: "/dashboard/rider/all-riders",
+        icon: <FiUsers className="w-4 h-4" />,
+        roles: ["admin"], // শুধুমাত্র অ্যাডমিন দেখতে পাবে
+      },
+      {
+        label: "Be a Rider",
+        href: "/be-a-rider",
+        icon: <FiPlusCircle className="w-4 h-4" />,
+        roles: ["admin", "user", "rider"], // সবাই দেখতে পাবে
+      },
+    ],
+  },
   {
     label: "Settings",
     href: "/settings",
     icon: <LuSettings className="w-5 h-5" />,
-    roles: ["admin", "user","rider"],
+    roles: ["admin", "user", "rider"],
   },
 ];
 
 const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-
-  // Default vave sob dropdown bondho thakbe
   const [openMenus, setOpenMenus] = useState({});
 
-  // Auto-open dropdown jodi user oi menu-r bhetore kono page-e thake
   useEffect(() => {
     const activeRoute = ROUTES.find(
       (route) =>
@@ -132,7 +129,6 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
     return route.roles ? route.roles.includes(user?.role) : true;
   });
 
-  // Skeleton UI for loading state
   const NavSkeleton = () => (
     <div className="space-y-4 animate-pulse px-4">
       {[1, 2, 3, 4].map((i) => (
@@ -146,7 +142,6 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-30 md:hidden backdrop-blur-sm transition-opacity"
@@ -159,14 +154,11 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
         ${collapsed ? "md:w-[85px]" : "md:w-64"} 
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"} w-64`}
       >
-        {/* Logo Section */}
         <div className="flex items-center h-20 px-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[#D4F06D] rounded-lg flex items-center justify-center shrink-0 shadow-sm relative overflow-hidden">
               <div className="absolute inset-0 bg-black/5 rotate-45 translate-x-4"></div>
-              <span className="text-black font-black text-xs relative z-10">
-                ZS
-              </span>
+              <span className="text-black font-black text-xs relative z-10">ZS</span>
             </div>
             {!collapsed && (
               <span className="font-black text-xl text-[#1A1A1A] tracking-tight">
@@ -219,20 +211,22 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
 
                     {isOpen && !collapsed && (
                       <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1 mt-1">
-                        {route.subLinks.map((sub) => {
-                          const active = pathname === sub.href;
-                          return (
-                            <Link
-                              key={sub.href}
-                              href={sub.href}
-                              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all
-                                ${active ? "text-[#98B42C] font-bold bg-[#98B42C]/5" : "text-gray-500 hover:text-black"}`}
-                            >
-                              {sub.icon}
-                              <span className="text-sm">{sub.label}</span>
-                            </Link>
-                          );
-                        })}
+                        {route.subLinks
+                          .filter((sub) => (sub.roles ? sub.roles.includes(user?.role) : true)) // এখানে সাব-লিঙ্ক ফিল্টারিং যোগ করা হয়েছে
+                          .map((sub) => {
+                            const active = pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all
+                                  ${active ? "text-[#98B42C] font-bold bg-[#98B42C]/5" : "text-gray-500 hover:text-black"}`}
+                              >
+                                {sub.icon}
+                                <span className="text-sm">{sub.label}</span>
+                              </Link>
+                            );
+                          })}
                       </div>
                     )}
                   </div>

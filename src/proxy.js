@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const privateRoutes = ["/be-a-rider", "/send-parcel", "/dashboard", "/profile"];
-const adminRoutes = ["/dashboard/users", "/dashboard/users/add"];
+const adminRoutes = ["/dashboard/users", "/dashboard/users/add","/dashboard/rider/all-riders"];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;
