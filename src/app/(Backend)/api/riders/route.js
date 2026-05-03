@@ -1,10 +1,10 @@
 import { getRiders } from "../../lib/dbConnect";
-import { verifyToken } from "../../middlewares/verifyToken";
 import { verifyAdmin } from "../../middlewares/IsAdmin";
+import { verifyToken } from "../../middlewares/verifyToken";
 
 export async function GET(request) {
   try {
-    // ১. প্রথমে টোকেন চেক (লগইন আছে কিনা)
+    // ১. ইউজার লগইন করা আছে কিনা চেক (Token Verification)
     const user = await verifyToken(request);
     if (!user) {
       return Response.json(
@@ -13,17 +13,18 @@ export async function GET(request) {
       );
     }
 
-    // ২. অ্যাডমিন মিডলওয়্যার চেক (অ্যাডমিন ছাড়া অন্য কেউ এই লাইনের নিচে যেতে পারবে না)
-    const isAdmin = await verifyAdmin(request);
-    if (!isAdmin) {
+    const admin = await verifyAdmin(request);
+
+    if (!admin) {
       return Response.json(
-        { success: false, message: "Forbidden: Admin access only" },
+        { success: false, message: "Unauthorized access" },
         { status: 403 },
       );
     }
 
-    // ৩. ডাটাবেজ থেকে ডাটা নিয়ে আসা
     const ridersCollection = await getRiders();
+
+    // ৩. সব রাইডারদের ডাটা নিয়ে আসা (সর্টিং সহ)
     const result = await ridersCollection
       .find()
       .sort({ appliedAt: -1 })
@@ -31,9 +32,8 @@ export async function GET(request) {
 
     return Response.json({ success: true, data: result }, { status: 200 });
   } catch (err) {
-    console.error("GET Error:", err);
     return Response.json(
-      { success: false, message: "Internal Server Error" },
+      { success: false, message: err.message },
       { status: 500 },
     );
   }

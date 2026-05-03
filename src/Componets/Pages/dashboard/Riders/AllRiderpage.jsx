@@ -10,11 +10,19 @@ import RiderButton from "@/Componets/buttons/RiderButton";
 const AllRiderpage = () => {
   const { user } = useAuth();
 
-  const { data: riders = [], isLoading } = useQuery({
+  const {
+    data: riders = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["Riders", user?.email],
+    enabled: !!user?.email,
     queryFn: async () => {
       const res = await axios.get("/api/riders");
-      return res.data.data || res.data.result;
+      if (res.data?.success) {
+        return res.data.data;
+      }
+      return [];
     },
   });
 
@@ -97,19 +105,28 @@ const AllRiderpage = () => {
                         {rider.district}
                       </td>
                       <td className="py-5 px-6">
-                        <span
-                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            rider.status === "pending"
-                              ? "bg-orange-100 text-orange-600"
-                              : "bg-green-100 text-green-600"
-                          }`}
-                        >
-                          {rider.status}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase w-fit ${
+                              rider.status.toLowerCase() === "pending"
+                                ? "bg-orange-100 text-orange-600"
+                                : rider.status.toLowerCase() === "accepted"
+                                  ? "bg-green-100 text-green-600"
+                                  : "bg-red-100 text-red-600"
+                            }`}
+                          >
+                            {rider.status}
+                          </span>
+                          {/* রাইডারের নিজস্ব রোল যদি অ্যাডমিন হয় তবে ব্যাজ দেখাবে */}
+                          {rider.role === "admin" && (
+                            <span className="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase w-fit">
+                              System Admin
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-5 px-6">
-                        {/* Action Button */}
-                        <RiderButton rider={rider} />
+                        <RiderButton rider={rider} user={user} />
                       </td>
                     </tr>
                   ))
