@@ -1,10 +1,12 @@
 "use client";
 import SendAParcelForm from "@/Componets/forms/SendAParcelForm";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const SendaParcelPage = () => {
+  const router = useRouter();
   const [allStates, setAllStates] = useState([]);
   const [allDistricts, setAllDistricts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,8 +64,6 @@ const SendaParcelPage = () => {
       const finalData = {
         ...tempFormData,
         cost: finalCost,
-        status: "pending",
-        createdAt: new Date(),
       };
 
       const res = await axios.post("/api/parcels", finalData);
@@ -72,6 +72,7 @@ const SendaParcelPage = () => {
         toast.success(`Booking Confirmed! Total: ৳${finalCost}`);
         setIsModalOpen(false);
         resetForm(); // চাইল্ড ফর্ম রিসেট হবে
+        router.push("/dashboard/parcels")
       }
     } catch (err) {
       console.error("Submission error:", err);

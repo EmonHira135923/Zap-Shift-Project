@@ -36,14 +36,14 @@ const ParcelButton = ({ parcel }) => {
         <LuEye size={16} />
       </Link>
 
-      {/* Edit Button */}
+      {/* Edit Button
       <Link
         href={`/dashboard/parcels/update-parcel/${_id}`}
         title="Edit Parcel"
         className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm flex-shrink-0"
       >
         <LuPencilLine size={16} />
-      </Link>
+      </Link> */}
 
       {/* Delete Trigger Button */}
       <button

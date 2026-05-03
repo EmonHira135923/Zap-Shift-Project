@@ -12,6 +12,8 @@ import {
   LuUserCheck,
   LuPackage,
   LuPackagePlus,
+  LuWallet,
+  LuHistory,
 } from "react-icons/lu";
 import useAuth from "../utils/Hooks/useAuth";
 
@@ -20,7 +22,7 @@ const ROUTES = [
     label: "Dashboard",
     href: "/dashboard",
     icon: <LuLayoutDashboard className="w-5 h-5" />,
-    roles: ["admin", "user"],
+    roles: ["admin", "user","rider"],
   },
   {
     label: "Manage Users",
@@ -44,7 +46,7 @@ const ROUTES = [
     label: "Manage Parcels",
     icon: <LuPackage className="w-5 h-5" />,
     isDropdown: true,
-    roles: ["admin", "user"],
+    roles: ["admin", "user","rider"],
     subLinks: [
       {
         label: "All Parcels",
@@ -59,10 +61,23 @@ const ROUTES = [
     ],
   },
   {
+    label: "Manage Payment",
+    icon: <LuWallet className="w-5 h-5" />, // পেমেন্টের জন্য ওয়ালেট বা ক্রেডিট কার্ড আইকন
+    isDropdown: true,
+    roles: ["admin", "user","rider"],
+    subLinks: [
+      {
+        label: "Payment History",
+        href: "/dashboard/payment/history",
+        icon: <LuHistory className="w-4 h-4" />, // হিস্টোরি আইকন
+      },
+    ],
+  },
+  {
     label: "Settings",
     href: "/settings",
     icon: <LuSettings className="w-5 h-5" />,
-    roles: ["admin", "user"],
+    roles: ["admin", "user","rider"],
   },
 ];
 

@@ -11,7 +11,9 @@ import {
   FiPhone,
   FiMail,
   FiInfo,
+  FiCheckCircle,
 } from "react-icons/fi";
+import Link from "next/link";
 
 const Parceldetailspage = ({ id }) => {
   const { data: parcel, isLoading } = useQuery({
@@ -38,11 +40,7 @@ const Parceldetailspage = ({ id }) => {
       </div>
     );
 
-  const createdAt = parcel?.createdAt?.$date
-    ? new Date(parcel.createdAt.$date).toLocaleDateString()
-    : parcel?.createdAt
-      ? new Date(parcel.createdAt).toLocaleDateString()
-      : "N/A";
+  const isPaid = parcel?.paymentStatus === "paid";
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-8 pb-20">
@@ -56,15 +54,15 @@ const Parceldetailspage = ({ id }) => {
             <span className="bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border border-white/20">
               ID: {id}
             </span>
+            {parcel?.trackingId && (
+              <span className="bg-blue-500/20 backdrop-blur-md text-blue-300 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border border-blue-500/30">
+                Tracking: {parcel.trackingId}
+              </span>
+            )}
           </div>
           <h1 className="text-5xl md:text-6xl font-black mb-4 tracking-tight">
             {parcel?.parcelName}
           </h1>
-          <div className="flex items-center gap-4 text-blue-100/60 font-medium">
-            <span className="flex items-center gap-2">
-              <FiCalendar /> Created: {createdAt}
-            </span>
-          </div>
         </div>
         <FiPackage className="absolute -right-12 -bottom-12 text-[18rem] text-white/5 rotate-12" />
       </div>
@@ -72,7 +70,6 @@ const Parceldetailspage = ({ id }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT COLUMN */}
         <div className="lg:col-span-2 space-y-8">
-          {/* SENDER & RECEIVER CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Sender */}
             <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all">
@@ -145,7 +142,7 @@ const Parceldetailspage = ({ id }) => {
                   Pickup Note
                 </p>
                 <p className="text-gray-700 font-bold bg-white p-4 rounded-2xl border border-gray-100 italic">
-                  "{parcel?.pickupInstruction}"
+                  "{parcel?.pickupInstruction || "No instructions provided"}"
                 </p>
               </div>
               <div className="space-y-1">
@@ -153,7 +150,7 @@ const Parceldetailspage = ({ id }) => {
                   Delivery Note
                 </p>
                 <p className="text-gray-700 font-bold bg-white p-4 rounded-2xl border border-gray-100 italic">
-                  "{parcel?.deliveryInstruction}"
+                  "{parcel?.deliveryInstruction || "No instructions provided"}"
                 </p>
               </div>
             </div>
@@ -174,6 +171,11 @@ const Parceldetailspage = ({ id }) => {
               />
               <SummaryRow label="Region From" value={parcel?.senderDistrict} />
               <SummaryRow label="Region To" value={parcel?.receiverDistrict} />
+              <SummaryRow
+                label="Payment Status"
+                value={isPaid ? "PAID" : "UNPAID"}
+                isPaid={isPaid}
+              />
 
               <div className="my-8 py-6 border-y border-dashed border-gray-200">
                 <div className="flex justify-between items-end">
@@ -186,9 +188,18 @@ const Parceldetailspage = ({ id }) => {
                 </div>
               </div>
 
-              <button className="w-full bg-[#C6EB71] hover:bg-[#b5da56] text-[#002B36] py-5 rounded-2xl font-black text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-lime-500/20 active:scale-95">
-                Confirm & Proceed
-              </button>
+              {isPaid ? (
+                <div className="flex items-center justify-center gap-2 w-full bg-gray-100 text-[#002B36]/50 py-5 rounded-2xl font-black text-lg cursor-not-allowed">
+                  <FiCheckCircle /> Payment Completed
+                </div>
+              ) : (
+                <Link
+                  href={`/dashboard/payment/${parcel._id}`}
+                  className="w-full bg-[#C6EB71] hover:bg-[#b5da56] text-[#002B36] py-5 rounded-2xl font-black text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-lime-500/20 active:scale-95"
+                >
+                  Confirm & Pay Now
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -204,17 +215,21 @@ const DetailItem = ({ label, value, icon }) => (
       {label}
     </p>
     <p className="font-bold text-gray-800 text-[15px]">
-      {icon} {value}
+      {icon} {value || "N/A"}
     </p>
   </div>
 );
 
-const SummaryRow = ({ label, value }) => (
+const SummaryRow = ({ label, value, isPaid }) => (
   <div className="flex justify-between items-center bg-[#f9fafb] p-3 rounded-xl border border-gray-50">
     <span className="text-[11px] font-black text-gray-400 uppercase">
       {label}
     </span>
-    <span className="font-black text-[#002B36]">{value}</span>
+    <span
+      className={`font-black ${label === "Payment Status" ? (isPaid ? "text-green-600" : "text-red-500") : "text-[#002B36]"}`}
+    >
+      {value}
+    </span>
   </div>
 );
 
