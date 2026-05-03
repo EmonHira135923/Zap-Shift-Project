@@ -1,3 +1,5 @@
+import Userpage from "@/Componets/Pages/dashboard/Users/Userpage";
+import React from "react";
 export const metadata = {
   title: "Users",
 
@@ -26,9 +28,6 @@ export const metadata = {
     follow: true,
   },
 };
-
-import Userpage from "@/Componets/Pages/dashboard/Users/Userpage";
-import React from "react";
 
 const User = () => {
   return (

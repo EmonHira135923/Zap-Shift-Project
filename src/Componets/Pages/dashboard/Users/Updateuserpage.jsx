@@ -115,7 +115,7 @@ const Updateuserpage = () => {
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
-              <option value="moderator">Rider</option>
+              <option value="Rider">Rider</option>
             </select>
             {errors.role && <span className="text-red-500 text-xs font-bold">{errors.role.message}</span>}
           </div>

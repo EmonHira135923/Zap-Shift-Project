@@ -16,6 +16,8 @@ import {
   LuHistory,
 } from "react-icons/lu";
 import useAuth from "../utils/Hooks/useAuth";
+import { FiPlusCircle, FiUsers } from "react-icons/fi";
+import { Motorbike } from "lucide-react";
 
 const ROUTES = [
   {
@@ -73,6 +75,26 @@ const ROUTES = [
       },
     ],
   },
+{
+  label: "Manage Riders",
+  icon: <Motorbike className="w-5 h-5" />, 
+  isDropdown: true,
+  roles: ["admin", "user", "rider"], // মেইন মেনু সবাই দেখতে পাবে
+  subLinks: [
+    {
+      label: "All Riders",
+      href: "/dashboard/rider/all-riders",
+      icon: <FiUsers className="w-4 h-4" />, 
+      roles: ["admin"], // এটি শুধুমাত্র অ্যাডমিন দেখতে পাবে
+    },
+    {
+      label: "Be a Rider", // Add Rider হিসেবে কাজ করবে
+      href: "/be-a-rider",
+      icon: <FiPlusCircle className="w-4 h-4" />, 
+      roles: ["admin", "user", "rider"], // সবাই এক্সেস করতে পারবে
+    },
+  ],
+},
   {
     label: "Settings",
     href: "/settings",
