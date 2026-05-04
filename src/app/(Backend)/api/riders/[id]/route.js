@@ -106,7 +106,10 @@ export async function PATCH(request, { params }) {
 
     // ৪. রাইডারের স্ট্যাটাস আপডেট করা
     const updatedDoc = {
-      $set: { status: status },
+      $set: {
+        status: status,
+        workStatus: "available",
+      },
     };
 
     const result = await riderCollection.updateOne(query, updatedDoc);
