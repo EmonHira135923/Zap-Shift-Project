@@ -5,7 +5,7 @@ import axios from "axios";
 import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-const UsersButton = ({ user }) => {
+const UsersButton = ({ user, isDisabled }) => {
   const queryClient = useQueryClient();
 
   // চেক করুন ইউজারটি অ্যাডমিন কি না
@@ -44,14 +44,24 @@ const UsersButton = ({ user }) => {
         <FaEye size={14} />
       </Link>
 
-      {/* Edit Link */}
-      <Link
-        href={`/dashboard/users/update-users/${user?._id}`}
-        className="p-2 rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors"
-        title="Edit"
-      >
-        <FaEdit size={14} />
-      </Link>
+      {/* * --- Edit Button/Link (Disabled if user is Rider) --- */}
+      {isDisabled ? (
+        <button
+          disabled
+          className="p-2 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+          title="Rider cannot be edited"
+        >
+          <FaEdit size={14} />
+        </button>
+      ) : (
+        <Link
+          href={`/dashboard/users/update-users/${user?._id}`}
+          className="p-2 rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors"
+          title="Edit"
+        >
+          <FaEdit size={14} />
+        </Link>
+      )}
 
       {/* Delete Button (Disabled for Admins) */}
       <button

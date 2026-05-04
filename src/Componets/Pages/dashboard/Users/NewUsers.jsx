@@ -77,7 +77,6 @@ const NewUsers = () => {
               className="w-full pl-12 pr-10 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#C6EB71] outline-none appearance-none cursor-pointer text-gray-700"
             >
               <option value="user">User (Standard)</option>
-              <option value="rider">Rider (Delivery Staff)</option>
               <option value="admin">Admin (Full Control)</option>
             </select>
             {/* Custom arrow for select */}
