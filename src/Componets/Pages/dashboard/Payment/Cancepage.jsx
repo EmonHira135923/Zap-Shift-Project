@@ -2,12 +2,13 @@
 import useAuth from "@/Componets/utils/Hooks/useAuth";
 import { useRouter } from "next/navigation";
 import React from "react";
+import PaymentCancelPageSkeleton from "@/Componets/Skeltons/PaymentCancelPageSkeleton";
 
 const Cancepage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <PaymentCancelPageSkeleton />;
 
   return (
     <div className="text-center mt-20">

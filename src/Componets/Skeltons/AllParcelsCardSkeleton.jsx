@@ -1,4 +1,4 @@
-export const ParcelSkeleton = () => (
+export const AllParcelsCardSkeleton = () => (
   <div className="bg-white border border-gray-100 rounded-[2rem] p-6 space-y-6 animate-pulse">
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-3">

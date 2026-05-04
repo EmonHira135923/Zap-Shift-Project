@@ -5,7 +5,7 @@ import useAuth from "@/Componets/utils/Hooks/useAuth";
 import PaymentsHistoryTable from "@/Componets/cards/PaymentsHistoryTable";
 import usePayments from "@/Componets/utils/Hooks/usePayments";
 import Pagination from "@/Componets/Shared/Pagination";
-
+import PaymentHistoryPageSkeleton from "@/Componets/Skeltons/PaymentHistoryPageSkeleton";
 
 const PaymentHistoryPage = () => {
   const authData = useAuth();
@@ -14,29 +14,22 @@ const PaymentHistoryPage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isFetching } = usePayments(user?.email, search, page);
+  const { data, isLoading, isFetching } = usePayments(
+    user?.email,
+    search,
+    page,
+  );
 
   const payments = data?.result || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / 10);
 
   if (!user?.email || isLoading) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[80vh]">
-        <div className="relative">
-          <div className="w-20 h-20 border-4 border-[#C6EB71]/20 border-t-[#002B36] rounded-full animate-spin"></div>
-          <FiCreditCard className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#002B36] text-xl" />
-        </div>
-        <p className="mt-6 text-[#002B36] font-bold tracking-widest animate-pulse uppercase text-sm">
-          Securing Transactions...
-        </p>
-      </div>
-    );
+    return <PaymentHistoryPageSkeleton />;
   }
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-10 pb-24 min-h-screen bg-[#F8FAFC]">
-      
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
         <div className="space-y-2">
@@ -72,8 +65,12 @@ const PaymentHistoryPage = () => {
           </div>
 
           <div className="bg-[#002B36] px-8 py-4 rounded-2xl shadow-xl shadow-[#002B36]/10 flex flex-col items-center justify-center min-w-[140px]">
-            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">Total Entries</span>
-            <span className="text-2xl font-black text-white leading-none">{total}</span>
+            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">
+              Total Entries
+            </span>
+            <span className="text-2xl font-black text-white leading-none">
+              {total}
+            </span>
           </div>
         </div>
       </div>
@@ -84,26 +81,30 @@ const PaymentHistoryPage = () => {
         <div className="relative bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
           {payments.length > 0 ? (
             <div className="overflow-x-auto">
-              <PaymentsHistoryTable payments={payments} />
+              <PaymentsHistoryTable
+                payments={payments}
+                currentPage={page}
+                itemsPerPage={10}
+              />
             </div>
           ) : (
             <div className="py-32 text-center">
               <div className="inline-flex p-6 bg-gray-50 rounded-full mb-4">
                 <FiCreditCard size={40} className="text-gray-200" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700">No Transactions Yet</h3>
-              <p className="text-gray-400 mt-1">When you pay for parcels, they will appear here.</p>
+              <h3 className="text-xl font-bold text-gray-700">
+                No Transactions Yet
+              </h3>
+              <p className="text-gray-400 mt-1">
+                When you pay for parcels, they will appear here.
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Reusable Pagination - এখানে এখন আমাদের কাস্টম কম্পোনেন্ট কাজ করবে */}
-      <Pagination
-        page={page} 
-        totalPages={totalPages} 
-        setPage={setPage} 
-      />
+      <Pagination page={page} totalPages={totalPages} setPage={setPage} />
     </div>
   );
 };

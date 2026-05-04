@@ -56,6 +56,7 @@ export async function PATCH(request) {
         paymentStatus: "paid",
         trackingId: newTrackingId,
         transactionId: session.payment_intent,
+        DeliveryStatus: "pending pickup",
         updatedAt: new Date(),
       },
     };
@@ -91,12 +92,12 @@ export async function PATCH(request) {
 
 export async function GET(request) {
   try {
-    const user = await verifyToken();
+    const user = await verifyToken(request);
 
     if (!user || !user.email) {
       return Response.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -143,7 +144,7 @@ export async function GET(request) {
   } catch (err) {
     return Response.json(
       { success: false, error: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

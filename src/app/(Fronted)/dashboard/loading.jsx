@@ -1,6 +1,6 @@
-import Skeleton from "@/Componets/Skeltons/SidebarSkeleton";
+import DashboardLayoutSkeleton from "@/Componets/Skeltons/DashboardLayoutSkeleton";
 
 
 export default function Loading() {
-  return <Skeleton/> ;
+  return <DashboardLayoutSkeleton/> ;
 }

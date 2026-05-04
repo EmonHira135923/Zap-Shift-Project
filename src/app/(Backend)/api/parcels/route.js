@@ -3,7 +3,7 @@ import { verifyToken } from "../../middlewares/verifyToken";
 
 export async function GET(request) {
   try {
-    const user = await verifyToken();
+    const user = await verifyToken(request);
 
     if (!user) {
       return Response.json(
@@ -17,6 +17,8 @@ export async function GET(request) {
 
     const email = searchParams.get("email");
     const search = searchParams.get("search");
+    const DeliveryStatus = searchParams.get("DeliveryStatus");
+    const paymentStatus = searchParams.get("paymentStatus");
     const page = parseInt(searchParams.get("page")) || 1;
 
     const limit = 10;
@@ -25,7 +27,26 @@ export async function GET(request) {
     const query = {};
 
     if (email) {
+      if (user.role !== "admin" && user.email !== email) {
+        return Response.json(
+          { success: false, message: "Forbidden" },
+          { status: 403 },
+        );
+      }
       query.senderEmail = email;
+    } else if (user.role !== "admin") {
+      query.senderEmail = user.email;
+    }
+
+    if (DeliveryStatus) {
+      query.DeliveryStatus =
+        DeliveryStatus === "pending pickup"
+          ? { $in: ["pending pickup", "peanding pickup", null] }
+          : DeliveryStatus;
+    }
+
+    if (paymentStatus) {
+      query.paymentStatus = paymentStatus;
     }
 
     if (search) {
@@ -64,7 +85,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const user = await verifyToken();
+    const user = await verifyToken(request);
     if (!user) {
       return Response.json(
         { success: false, message: "Unauthorized" },
@@ -75,6 +96,10 @@ export async function POST(request) {
     const body = await request.json();
     const newParcel = {
       ...body,
+      senderEmail: user.email || body.senderEmail,
+      senderName: body.senderName || user.name,
+      paymentStatus: body.paymentStatus || "unpaid",
+      DeliveryStatus: body.DeliveryStatus || "pending payment",
       createdAt: new Date(),
       updatedAt: null,
     };

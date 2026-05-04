@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { FiCheck, FiX, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,16 +10,16 @@ const RiderButton = ({ rider, user }) => {
   const queryClient = useQueryClient();
   const modalId = `delete_modal_${rider._id}`;
 
-  // ১. লজিক সেটআপ
-  const isRiderAdmin = rider?.role === "admin"; // তালিকার এই রাইডার কি নিজে একজন অ্যাডমিন?
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const isRiderAdmin = rider?.role === "admin";
   const isAccepted = rider.status?.toLowerCase() === "accepted";
   const isRejected = rider.status?.toLowerCase() === "rejected";
 
   const refreshData = () => queryClient.invalidateQueries(["Riders"]);
 
-  // স্ট্যাটাস আপডেট হ্যান্ডলার
+  // ✅ Status Update
   const handleStatusUpdate = async (newStatus) => {
-    // যদি রাইডার অ্যাডমিন হয়, তবে কোনো আপডেট হবে না
     if (isRiderAdmin)
       return toast.error("System Admins cannot be modified here!");
 
@@ -27,6 +27,7 @@ const RiderButton = ({ rider, user }) => {
       const { data } = await axios.patch(`/api/riders/${rider._id}`, {
         status: newStatus,
       });
+
       if (data.success) {
         toast.success(`Rider marked as ${newStatus}`);
         refreshData();
@@ -36,10 +37,15 @@ const RiderButton = ({ rider, user }) => {
     }
   };
 
-  // ডিলিট হ্যান্ডলার
+  // ✅ DELETE with loading
   const handleDelete = async () => {
+    if (isDeleting) return;
+
     try {
+      setIsDeleting(true);
+
       const { data } = await axios.delete(`/api/riders/${rider._id}`);
+
       if (data.success) {
         toast.success("Rider removed successfully");
         document.getElementById(modalId)?.close();
@@ -47,13 +53,16 @@ const RiderButton = ({ rider, user }) => {
       }
     } catch (error) {
       toast.error("Failed to delete rider");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  // ডাইনামিক বাটন ক্লাস জেনারেটর
+  // ✅ Button Style
   const getBtnClass = (colorType, isDisabled) => {
     const base =
       "p-2 rounded-xl transition-all duration-200 shadow-sm active:scale-95";
+
     if (isDisabled)
       return `${base} bg-gray-100 text-gray-300 cursor-not-allowed shadow-none`;
 
@@ -63,13 +72,14 @@ const RiderButton = ({ rider, user }) => {
         "bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white",
       red: "bg-red-50 text-red-500 hover:bg-red-500 hover:text-white",
     };
+
     return `${base} ${colors[colorType]}`;
   };
 
   return (
     <div className="relative">
       <div className="flex justify-center gap-3">
-        {/* Accept Button: ডিজেবল হবে যদি রাইডার অ্যাডমিন হয় অথবা অলরেডি একসেপ্টেড/রিজেক্টেড থাকে */}
+        {/* Accept */}
         <button
           onClick={() => handleStatusUpdate("Accepted")}
           disabled={isRiderAdmin || isAccepted || isRejected}
@@ -77,12 +87,11 @@ const RiderButton = ({ rider, user }) => {
             "green",
             isRiderAdmin || isAccepted || isRejected,
           )}
-          title={isRiderAdmin ? "Admin cannot be changed" : "Accept"}
         >
           <FiCheck size={18} />
         </button>
 
-        {/* Reject Button: ডিজেবল হবে যদি রাইডার অ্যাডমিন হয় অথবা অলরেডি একসেপ্টেড/রিজেক্টেড থাকে */}
+        {/* Reject */}
         <button
           onClick={() => handleStatusUpdate("Rejected")}
           disabled={isRiderAdmin || isAccepted || isRejected}
@@ -90,12 +99,11 @@ const RiderButton = ({ rider, user }) => {
             "orange",
             isRiderAdmin || isAccepted || isRejected,
           )}
-          title={isRiderAdmin ? "Admin cannot be changed" : "Reject"}
         >
           <FiX size={18} />
         </button>
 
-        {/* Delete Button: ডিজেবল হবে যদি রাইডার অ্যাডমিন হয় অথবা রাইডার অলরেডি একসেপ্টেড থাকে */}
+        {/* Delete */}
         <button
           onClick={() =>
             !isRiderAdmin &&
@@ -104,13 +112,12 @@ const RiderButton = ({ rider, user }) => {
           }
           disabled={isRiderAdmin || isAccepted}
           className={getBtnClass("red", isRiderAdmin || isAccepted)}
-          title={isRiderAdmin ? "Admin cannot be deleted" : "Delete"}
         >
           <FiTrash2 size={18} />
         </button>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* ✅ Modal */}
       {!isRiderAdmin && !isAccepted && (
         <dialog
           id={modalId}
@@ -120,26 +127,44 @@ const RiderButton = ({ rider, user }) => {
             <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
               <FiTrash2 size={40} />
             </div>
+
             <h3 className="font-black text-2xl text-[#002B36] mb-2">
               Delete Rider?
             </h3>
+
             <p className="text-gray-500 mb-8">
               Are you sure you want to remove <b>{rider.name}</b>?
             </p>
+
             <div className="flex gap-4">
               <form method="dialog" className="flex-1">
                 <button className="btn w-full bg-gray-100 border-none text-gray-500 rounded-2xl">
                   Cancel
                 </button>
               </form>
+
+              {/* 🔥 LOADING DELETE BUTTON */}
               <button
                 onClick={handleDelete}
-                className="btn flex-[1.5] bg-red-500 border-none text-white rounded-2xl hover:bg-red-600 shadow-lg shadow-red-200"
+                disabled={isDeleting}
+                className={`btn flex-[1.5] border-none text-white rounded-2xl shadow-lg ${
+                  isDeleting
+                    ? "bg-red-300 cursor-not-allowed"
+                    : "bg-red-500 hover:bg-red-600"
+                }`}
               >
-                Yes, Delete
+                {isDeleting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Deleting...
+                  </span>
+                ) : (
+                  "Yes, Delete"
+                )}
               </button>
             </div>
           </div>
+
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
           </form>

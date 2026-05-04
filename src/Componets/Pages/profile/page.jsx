@@ -3,13 +3,13 @@ import useAuth from "@/Componets/utils/Hooks/useAuth";
 import React from "react";
 import Image from "next/image";
 import Profileedit from "@/Componets/buttons/Profileedit";
-import Loading from "./Loading";
+import ProfilePageSkeleton from "@/Componets/Skeltons/ProfilePageSkeleton";
 
 const Profilepage = () => {
   const { user, loading } = useAuth();
   console.log(user);
 
-  if (loading) return <Loading />;
+  if (loading) return <ProfilePageSkeleton />;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-10">

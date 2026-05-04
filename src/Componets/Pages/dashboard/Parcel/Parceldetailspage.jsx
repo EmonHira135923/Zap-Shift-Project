@@ -14,6 +14,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import Link from "next/link";
+import { ParcelDetailsPageSkeleton } from "@/Componets/Skeltons/ParcelDetailsPageSkeleton";
 
 const Parceldetailspage = ({ id }) => {
   const { data: parcel, isLoading } = useQuery({
@@ -26,19 +27,7 @@ const Parceldetailspage = ({ id }) => {
   });
 
   // --- LOADING SKELETON ---
-  if (isLoading)
-    return (
-      <div className="max-w-6xl mx-auto p-4 sm:p-8 animate-pulse">
-        <div className="h-64 bg-gray-200 rounded-[2.5rem] mb-8" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="h-48 bg-gray-200 rounded-[2rem]" />
-            <div className="h-48 bg-gray-200 rounded-[2rem]" />
-          </div>
-          <div className="h-96 bg-gray-200 rounded-[2rem]" />
-        </div>
-      </div>
-    );
+  if (isLoading) return <ParcelDetailsPageSkeleton />;
 
   const isPaid = parcel?.paymentStatus === "paid";
 
@@ -142,7 +131,7 @@ const Parceldetailspage = ({ id }) => {
                   Pickup Note
                 </p>
                 <p className="text-gray-700 font-bold bg-white p-4 rounded-2xl border border-gray-100 italic">
-                  "{parcel?.pickupInstruction || "No instructions provided"}"
+                  &quot;{parcel?.pickupInstruction || "No instructions provided"}&quot;
                 </p>
               </div>
               <div className="space-y-1">
@@ -150,7 +139,7 @@ const Parceldetailspage = ({ id }) => {
                   Delivery Note
                 </p>
                 <p className="text-gray-700 font-bold bg-white p-4 rounded-2xl border border-gray-100 italic">
-                  "{parcel?.deliveryInstruction || "No instructions provided"}"
+                  &quot;{parcel?.deliveryInstruction || "No instructions provided"}&quot;
                 </p>
               </div>
             </div>
@@ -189,13 +178,13 @@ const Parceldetailspage = ({ id }) => {
               </div>
 
               {isPaid ? (
-                <div className="flex items-center justify-center gap-2 w-full bg-gray-100 text-[#002B36]/50 py-5 rounded-2xl font-black text-lg cursor-not-allowed">
-                  <FiCheckCircle /> Payment Completed
+                <div className="flex items-center justify-center gap-2 w-full bg-gray-50 text-emerald-600 border border-emerald-100 py-5 rounded-[2rem] font-bold text-lg cursor-not-allowed">
+                  <FiCheckCircle className="text-xl" /> Payment Completed
                 </div>
               ) : (
                 <Link
                   href={`/dashboard/payment/${parcel._id}`}
-                  className="w-full bg-[#C6EB71] hover:bg-[#b5da56] text-[#002B36] py-5 rounded-2xl font-black text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-lime-500/20 active:scale-95"
+                  className="flex items-center justify-center w-full bg-[#C6EB71] hover:bg-[#b5da56] text-[#002B36] py-5 rounded-[2rem] font-black text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-lime-500/10 active:scale-[0.98]"
                 >
                   Confirm & Pay Now
                 </Link>

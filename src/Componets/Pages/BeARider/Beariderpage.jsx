@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 import useAuth from "@/Componets/utils/Hooks/useAuth";
 import useLocations from "@/Componets/utils/Hooks/useLocations";
+import BeARiderPageSkeleton from "@/Componets/Skeltons/BeARiderPageSkeleton";
 
 import {
   FiCheckCircle,
@@ -63,11 +64,7 @@ const Beariderpage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-xl font-bold">
-        Loading...
-      </div>
-    );
+    return <BeARiderPageSkeleton />;
   }
 
   return (

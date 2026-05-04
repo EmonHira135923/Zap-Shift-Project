@@ -50,7 +50,7 @@ export async function POST(request) {
 
     // ৬. JWT Payload তৈরি
     const payload = {
-      _id: user._id,
+      _id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
@@ -86,11 +86,18 @@ export async function POST(request) {
       path: "/",
     });
 
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password;
+
     return Response.json(
       {
         message: "User Login Successfully.",
         success: true,
-        result: accessToken,
+        result: {
+          ...userWithoutPassword,
+          _id: user._id.toString(),
+        },
+        accessToken,
       },
       { status: 200 },
     );

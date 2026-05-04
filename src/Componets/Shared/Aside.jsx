@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import {
   LuLayoutDashboard,
@@ -17,7 +17,8 @@ import {
 } from "react-icons/lu";
 import useAuth from "../utils/Hooks/useAuth";
 import { FiPlusCircle, FiUsers } from "react-icons/fi";
-import { Motorbike } from "lucide-react";
+import { Bike, Motorbike } from "lucide-react";
+import DashboardAsideNavSkeleton from "../Skeltons/DashboardAsideNavSkeleton";
 
 const ROUTES = [
   {
@@ -88,6 +89,12 @@ const ROUTES = [
         roles: ["admin"], // শুধুমাত্র অ্যাডমিন দেখতে পাবে
       },
       {
+        label: "Assign Rider",
+        href: "/dashboard/rider/assign-rider",
+        icon: <Bike className="w-4 h-4" />,
+        roles: ["admin"], // সবাই দেখতে পাবে
+      },
+      {
         label: "Be a Rider",
         href: "/be-a-rider",
         icon: <FiPlusCircle className="w-4 h-4" />,
@@ -108,16 +115,6 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   const { user, loading } = useAuth();
   const [openMenus, setOpenMenus] = useState({});
 
-  useEffect(() => {
-    const activeRoute = ROUTES.find(
-      (route) =>
-        route.isDropdown && route.subLinks.some((sub) => pathname === sub.href),
-    );
-    if (activeRoute) {
-      setOpenMenus((prev) => ({ ...prev, [activeRoute.label]: true }));
-    }
-  }, [pathname]);
-
   const toggleMenu = (label) => {
     setOpenMenus((prev) => ({
       ...prev,
@@ -128,17 +125,6 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
   const filteredRoutes = ROUTES.filter((route) => {
     return route.roles ? route.roles.includes(user?.role) : true;
   });
-
-  const NavSkeleton = () => (
-    <div className="space-y-4 animate-pulse px-4">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center gap-3 py-2">
-          <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
-          {!collapsed && <div className="h-4 bg-gray-200 rounded w-24"></div>}
-        </div>
-      ))}
-    </div>
-  );
 
   return (
     <>
@@ -178,14 +164,14 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
 
         <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto scrollbar-hide">
           {loading ? (
-            <NavSkeleton />
+            <DashboardAsideNavSkeleton collapsed={collapsed} />
           ) : (
             filteredRoutes.map((route) => {
               if (route.isDropdown) {
-                const isOpen = openMenus[route.label];
                 const isSubActive = route.subLinks.some(
                   (sub) => pathname === sub.href,
                 );
+                const isOpen = openMenus[route.label] ?? isSubActive;
 
                 return (
                   <div key={route.label} className="space-y-1">

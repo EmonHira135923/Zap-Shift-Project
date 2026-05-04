@@ -1,9 +1,14 @@
 import React from "react";
 import Image from "next/image";
-import TableSkeleton from "../Skeltons/TableSkeleton";
+import AllUsersTableRowSkeleton from "../Skeltons/AllUsersTableRowSkeleton";
 import UsersButton from "../buttons/UsersButton";
 
-const UsersTable = ({ users, isLoading }) => {
+const UsersTable = ({
+  users,
+  isLoading,
+  currentPage = 1,
+  itemsPerPage = 10,
+}) => {
   return (
     <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden">
       {/* Wrapper for responsiveness */}
@@ -20,14 +25,18 @@ const UsersTable = ({ users, isLoading }) => {
           </thead>
           <tbody className="divide-y divide-slate-50">
             {isLoading
-              ? [...Array(5)].map((_, i) => <TableSkeleton key={i} />)
+              ? [...Array(5)].map((_, i) => (
+                  <AllUsersTableRowSkeleton key={i} />
+                ))
               : users.map((user, index) => (
                   <tr
                     key={user._id}
                     className="hover:bg-gray-50/30 transition-colors"
                   >
-                    <td className="px-6 py-4 text-sm text-slate-400 font-medium">
-                      {(index + 1).toString().padStart(2, "0")}
+                    <td className="px-6 py-4 text-lg text-slate-400 font-medium">
+                      {String(
+                        (currentPage - 1) * itemsPerPage + index + 1,
+                      ).padStart(2, "0")}
                     </td>
 
                     {/* Image, Name, and Email */}

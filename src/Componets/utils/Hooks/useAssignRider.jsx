@@ -1,15 +1,19 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const useParcels = (email, search, page) => {
+const useAssignRider = (search, page, enabled, authKey) => {
   return useQuery({
-    queryKey: ["parcels", email, search, page],
-    enabled: !!email,
+    queryKey: ["parcels", "pending pickup", authKey, search, page],
+
+    enabled,
+
     queryFn: async () => {
       const params = new URLSearchParams({
-        email,
         page: String(page),
+        DeliveryStatus: "pending pickup",
+        paymentStatus: "paid",
       });
 
       if (search) {
@@ -17,9 +21,10 @@ const useParcels = (email, search, page) => {
       }
 
       const res = await axios.get(`/api/parcels?${params.toString()}`);
+
       return res.data;
     },
   });
 };
 
-export default useParcels;
+export default useAssignRider;

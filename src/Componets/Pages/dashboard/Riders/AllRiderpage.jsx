@@ -6,40 +6,25 @@ import useAuth from "@/Componets/utils/Hooks/useAuth";
 import RidersTable from "@/Componets/cards/RidersTable";
 import Pagination from "@/Componets/Shared/Pagination";
 import useRiders from "@/Componets/utils/Hooks/useRiders";
+import AllRidersPageSkeleton from "@/Componets/Skeltons/AllRidersPageSkeleton";
 
 const AllRiderpage = () => {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isFetching } = useRiders(
-    user?.email,
-    search,
-    page
-  );
+  const { data, isLoading, isFetching } = useRiders(user?.email, search, page);
 
   const riders = data?.data || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / 10);
 
-  // --- Premium Loading State ---
   if (!user?.email || isLoading) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[80vh]">
-        <div className="relative">
-          <div className="w-20 h-20 border-4 border-[#C6EB71]/20 border-t-[#002B36] rounded-full animate-spin"></div>
-          <FiUsers className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#002B36] text-xl" />
-        </div>
-        <p className="mt-6 text-[#002B36] font-bold tracking-widest animate-pulse uppercase text-sm">
-          Loading Rider Network...
-        </p>
-      </div>
-    );
+    return <AllRidersPageSkeleton />;
   }
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-10 pb-24 min-h-screen bg-[#F8FAFC]">
-      
       {/* --- Header Section --- */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
         <div className="space-y-2">
@@ -77,8 +62,12 @@ const AllRiderpage = () => {
 
           {/* Total Stats Card */}
           <div className="bg-[#002B36] px-8 py-4 rounded-2xl shadow-xl shadow-[#002B36]/10 flex flex-col items-center justify-center min-w-[140px] w-full sm:w-auto">
-            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">Active Riders</span>
-            <span className="text-2xl font-black text-white leading-none">{total}</span>
+            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">
+              Active Riders
+            </span>
+            <span className="text-2xl font-black text-white leading-none">
+              {total}
+            </span>
           </div>
         </div>
       </div>
@@ -87,19 +76,29 @@ const AllRiderpage = () => {
       <div className="relative group">
         {/* Decorative background blur effect */}
         <div className="absolute -inset-1 bg-gradient-to-r from-[#C6EB71] to-[#002B36] rounded-[2.5rem] blur opacity-[0.03] group-hover:opacity-[0.06] transition-opacity"></div>
-        
+
         <div className="relative bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
           {riders.length > 0 ? (
             <div className="overflow-x-auto">
-              <RidersTable riders={riders} isLoading={isLoading} user={user} />
+              <RidersTable
+                riders={riders}
+                isLoading={isLoading}
+                user={user}
+                currentPage={page}
+                itemsPerPage={10}
+              />
             </div>
           ) : (
             <div className="py-32 text-center">
               <div className="inline-flex p-6 bg-gray-50 rounded-full mb-4">
                 <FiUsers size={40} className="text-gray-200" />
               </div>
-              <h3 className="text-xl font-bold text-gray-700">No Riders Found</h3>
-              <p className="text-gray-400 mt-1">Try adjusting your search or filters.</p>
+              <h3 className="text-xl font-bold text-gray-700">
+                No Riders Found
+              </h3>
+              <p className="text-gray-400 mt-1">
+                Try adjusting your search or filters.
+              </p>
             </div>
           )}
         </div>
@@ -109,7 +108,6 @@ const AllRiderpage = () => {
       <div className="mt-8">
         <Pagination page={page} totalPages={totalPages} setPage={setPage} />
       </div>
-
     </div>
   );
 };

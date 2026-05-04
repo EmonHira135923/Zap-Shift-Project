@@ -1,7 +1,6 @@
-// components/UserManagement/TableSkeleton.jsx
-import React from 'react';
+import React from "react";
 
-const TableSkeleton = () => (
+const AllUsersTableRowSkeleton = () => (
   <tr className="animate-pulse">
     <td className="px-6 py-4">
       <div className="h-4 w-4 bg-slate-100 rounded"></div>
@@ -18,6 +17,9 @@ const TableSkeleton = () => (
     <td className="px-6 py-4">
       <div className="h-6 w-16 bg-slate-100 rounded-full"></div>
     </td>
+    <td className="px-6 py-4">
+      <div className="h-4 w-24 bg-slate-100 rounded"></div>
+    </td>
     <td className="px-6 py-4 text-right">
       <div className="flex justify-end gap-2">
         <div className="h-8 w-8 bg-slate-100 rounded-lg"></div>
@@ -28,4 +30,4 @@ const TableSkeleton = () => (
   </tr>
 );
 
-export default TableSkeleton;
+export default AllUsersTableRowSkeleton;

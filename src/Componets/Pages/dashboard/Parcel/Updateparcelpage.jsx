@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import UpdateParcelPageSkeleton from "@/Componets/Skeltons/UpdateParcelPageSkeleton";
 
 const Updateparcelpage = () => {
   const { id } = useParams();
@@ -94,12 +95,7 @@ const Updateparcelpage = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="p-20 text-center font-bold text-[#1e3a8a]">
-        Loading Parcel Data...
-      </div>
-    );
+  if (isLoading) return <UpdateParcelPageSkeleton />;
 
   return (
     <div className="max-w-6xl mx-auto p-10 bg-[#f8fafc] min-h-screen">

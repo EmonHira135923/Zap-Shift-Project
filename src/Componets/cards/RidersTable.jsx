@@ -1,8 +1,14 @@
 import React from "react";
-import { RiderTableSkeleton } from "../Skeltons/RiderTableSkeleton";
+import { AllRidersTableSkeleton } from "../Skeltons/AllRidersTableSkeleton";
 import RiderButton from "../buttons/RiderButton";
 
-const RidersTable = ({ riders, isLoading, user }) => {
+const RidersTable = ({
+  riders,
+  isLoading,
+  user,
+  currentPage = 1,
+  itemsPerPage = 10,
+}) => {
   return (
     <div>
       <div className="overflow-x-auto">
@@ -34,15 +40,17 @@ const RidersTable = ({ riders, isLoading, user }) => {
           </thead>
           <tbody>
             {isLoading ? (
-              <RiderTableSkeleton />
+              <AllRidersTableSkeleton />
             ) : (
-              riders.map((rider,index) => (
+              riders.map((rider, index) => (
                 <tr
                   key={rider._id}
                   className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
                 >
-                  <td className="px-6 py-4 text-sm text-slate-400 font-medium">
-                    {(index + 1).toString().padStart(2, "0")}
+                  <td className="px-6 py-4 text-lg text-slate-400 font-medium">
+                    {String(
+                      (currentPage - 1) * itemsPerPage + index + 1,
+                    ).padStart(2, "0")}
                   </td>
                   <td className="py-5 px-6">
                     <div className="font-bold text-[#002B36]">{rider.name}</div>

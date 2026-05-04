@@ -19,7 +19,6 @@ const Userpage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-10 pb-20 bg-[#F8FAFC] min-h-screen">
-      
       {/* --- Header Section --- */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
         <div className="space-y-2">
@@ -52,8 +51,12 @@ const Userpage = () => {
 
           {/* User Count Card */}
           <div className="bg-[#002B36] px-8 py-4 rounded-2xl shadow-xl shadow-[#002B36]/10 flex flex-col items-center justify-center min-w-[140px] w-full sm:w-auto">
-            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">Total Members</span>
-            <span className="text-2xl font-black text-white leading-none">{total}</span>
+            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">
+              Total Members
+            </span>
+            <span className="text-2xl font-black text-white leading-none">
+              {total}
+            </span>
           </div>
         </div>
       </div>
@@ -61,7 +64,7 @@ const Userpage = () => {
       {/* --- Table Container --- */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-[#C6EB71] to-[#002B36] rounded-[2.5rem] blur opacity-[0.03] transition-opacity"></div>
-        
+
         <div className="relative bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
           {/* Loader Overlay */}
           {isFetching && (
@@ -69,15 +72,24 @@ const Userpage = () => {
           )}
 
           <div className="overflow-x-auto min-h-[400px]">
-            <UsersTable users={users} isLoading={isLoading} />
-            
+            <UsersTable
+              users={users}
+              isLoading={isLoading}
+              currentPage={page}
+              itemsPerPage={10}
+            />
+
             {!isLoading && users.length === 0 && (
               <div className="py-32 text-center">
                 <div className="inline-flex p-6 bg-gray-50 rounded-full mb-4">
                   <FiUsers size={40} className="text-gray-200" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700">No Users Found</h3>
-                <p className="text-gray-400 mt-1">We couldn't find any users matching your search.</p>
+                <h3 className="text-xl font-bold text-gray-700">
+                  No Users Found
+                </h3>
+                <p className="text-gray-400 mt-1">
+                  We couldn't find any users matching your search.
+                </p>
               </div>
             )}
           </div>

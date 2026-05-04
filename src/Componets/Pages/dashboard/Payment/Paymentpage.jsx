@@ -1,5 +1,5 @@
 "use client";
-import PaymentSkeleton from "@/Componets/Skeltons/PaymentSkeleton";
+import PaymentCheckoutPageSkeleton from "@/Componets/Skeltons/PaymentCheckoutPageSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ const Paymentpage = () => {
     enabled: !!id,
   });
 
-  if (isLoading) return <PaymentSkeleton />;
+  if (isLoading) return <PaymentCheckoutPageSkeleton />;
 
   if (error || !parcel) {
     return (
@@ -111,7 +111,7 @@ const Paymentpage = () => {
           </button>
 
           <p className="text-center text-[10px] text-gray-400 px-8">
-            By clicking "Confirm & Pay", you agree to our terms of service and
+            By clicking &quot;Confirm & Pay&quot;, you agree to our terms of service and
             refund policy.
           </p>
         </div>

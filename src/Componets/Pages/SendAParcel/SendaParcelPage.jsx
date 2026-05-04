@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import SendAParcelForm from "@/Componets/forms/SendAParcelForm";
 import useLocations from "@/Componets/utils/Hooks/useLocations";
+import SendAParcelPageSkeleton from "@/Componets/Skeltons/SendAParcelPageSkeleton";
 
 const SendaParcelPage = () => {
   const router = useRouter();
@@ -53,7 +54,7 @@ const SendaParcelPage = () => {
     }
   };
 
-  if (loading) return <div className="p-20 text-center font-bold text-[#002B36]">Loading Locations...</div>;
+  if (loading) return <SendAParcelPageSkeleton />;
 
   return (
     <section className="min-h-screen bg-gray-50 py-10 px-4">

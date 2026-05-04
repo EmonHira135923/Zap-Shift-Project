@@ -7,6 +7,7 @@ import useAuth from "@/Componets/utils/Hooks/useAuth";
 import { toast } from "react-toastify";
 import { uploadToCloudinary } from "@/app/(Backend)/lib/cloudanry";
 import Image from "next/image";
+import ProfileEditImageSkeleton from "@/Componets/Skeltons/ProfileEditImageSkeleton";
 
 const Editpage = ({ initialData }) => {
   const { id } = useParams();
@@ -92,7 +93,7 @@ const Editpage = ({ initialData }) => {
                   className="object-cover"
                 />
               ) : (
-                <div className="h-full w-full bg-gray-200 animate-pulse" />
+                <ProfileEditImageSkeleton />
               )}
             </div>
           </div>

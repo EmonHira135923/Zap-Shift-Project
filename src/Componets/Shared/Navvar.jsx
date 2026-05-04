@@ -12,6 +12,7 @@ import {
 import useAuth from "../utils/Hooks/useAuth";
 import Image from "next/image";
 import { PersonStanding } from "lucide-react";
+import NavbarAuthSkeleton from "../Skeltons/NavbarAuthSkeleton";
 
 const Navvbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,10 +72,7 @@ const Navvbar = () => {
         {/* RIGHT: Auth & Profile Section */}
         <div className="flex items-center gap-3">
           {loading ? (
-            <div className="flex items-center gap-3 animate-pulse">
-              <div className="hidden md:block w-24 h-10 bg-gray-200 rounded-xl"></div>
-              <div className="w-10 h-10 md:w-32 md:h-10 bg-gray-200 rounded-full md:rounded-xl"></div>
-            </div>
+            <NavbarAuthSkeleton />
           ) : user ? (
             /* Desktop Profile Dropdown with Ref */
             <div ref={profileRef} className="hidden lg:block relative">

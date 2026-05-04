@@ -1,23 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
-import CoverageSkeleton from "@/Componets/Skeltons/CoverageSkeleton";
+import CoveragePageSkeleton from "@/Componets/Skeltons/CoveragePageSkeleton";
+import CoverageMapSkeleton from "@/Componets/Skeltons/CoverageMapSkeleton";
 
 // ম্যাপ কম্পোনেন্টকে ডাইনামিকালি ইম্পোর্ট করা হচ্ছে (SSR বন্ধ রাখা হয়েছে)
 const MapComponent = dynamic(() => import("@/Componets/Map/MapComponent"), {
   ssr: false,
-  loading: () => (
-    <div className="h-full w-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400">
-      Loading Maps...
-    </div>
-  ),
+  loading: () => <CoverageMapSkeleton />,
 });
 
 const CoveragePage = () => {
   const [mapdata, setMapData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeLocation, setActiveLocation] = useState(null);
@@ -26,7 +22,6 @@ const CoveragePage = () => {
     axios.get("/data/Map.json")
       .then((res) => {
         setMapData(res.data);
-        setFilteredData(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -35,15 +30,14 @@ const CoveragePage = () => {
       });
   }, []);
 
-  useEffect(() => {
-    const results = mapdata.filter((item) =>
+  const filteredData = useMemo(() => {
+    return mapdata.filter((item) =>
       item.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.city.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredData(results);
-  }, [searchTerm, mapdata]);
+  }, [mapdata, searchTerm]);
 
-  if (loading) return <CoverageSkeleton />;
+  if (loading) return <CoveragePageSkeleton />;
 
   return (
     <section className="w-full bg-[#f3f4f6] py-10 px-4">

@@ -3,6 +3,7 @@ import useAuth from "@/Componets/utils/Hooks/useAuth";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
+import PaymentSuccessProcessingSkeleton from "@/Componets/Skeltons/PaymentSuccessProcessingSkeleton";
 
 const Successpage = () => {
   const { user, loading } = useAuth();
@@ -31,12 +32,7 @@ const Successpage = () => {
   }, [user, loading, router, sessionId]);
 
   if (loading || (!paymentData && sessionId)) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#98B42C]"></div>
-        <p className="mt-4 text-gray-500">Processing your secure payment...</p>
-      </div>
-    );
+    return <PaymentSuccessProcessingSkeleton />;
   }
 
   return (

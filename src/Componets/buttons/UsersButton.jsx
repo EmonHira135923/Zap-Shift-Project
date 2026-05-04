@@ -1,17 +1,20 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const UsersButton = ({ user, isDisabled }) => {
   const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // চেক করুন ইউজারটি অ্যাডমিন কি না
   const isAdmin = user?.role === "admin";
 
   const handleDelete = async (id) => {
+    if (isDeleting) return;
+
     // সেফটি চেক: যদি কোনোভাবে বাটন ক্লিক হয়, ফাংশন কাজ করবে না
     if (isAdmin) {
       toast.error("Admin accounts cannot be deleted!");
@@ -19,10 +22,11 @@ const UsersButton = ({ user, isDisabled }) => {
     }
 
     try {
+      setIsDeleting(true);
       const res = await axios.delete(`/api/auth/register/${id}`);
       if (res.data) {
         toast.success("User deleted successfully!");
-        queryClient.invalidateQueries(["users"]);
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         document.getElementById(`delete_modal_${id}`).close();
       }
     } catch (error) {
@@ -30,6 +34,8 @@ const UsersButton = ({ user, isDisabled }) => {
       const errorMsg = error.response?.data?.message || "Failed to delete user";
       toast.error(errorMsg);
       console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -100,9 +106,10 @@ const UsersButton = ({ user, isDisabled }) => {
               </form>
               <button
                 onClick={() => handleDelete(user?._id)}
-                className="btn bg-red-500 hover:bg-red-600 text-white border-none rounded-xl"
+                disabled={isDeleting}
+                className="btn bg-red-500 hover:bg-red-600 text-white border-none rounded-xl disabled:bg-red-300 disabled:text-white disabled:cursor-not-allowed"
               >
-                Confirm Delete
+                {isDeleting ? "Deleting..." : "Confirm Delete"}
               </button>
             </div>
           </div>

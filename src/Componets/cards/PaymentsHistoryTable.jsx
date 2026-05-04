@@ -1,8 +1,18 @@
 import React from "react";
 import Link from "next/link";
-import { FiHash, FiEye, FiCalendar, FiCheckCircle } from "react-icons/fi";
+import {
+  FiHash,
+  FiEye,
+  FiCalendar,
+  FiCheckCircle,
+  FiCreditCard,
+} from "react-icons/fi";
 
-const PaymentsHistoryTable = ({ payments }) => {
+const PaymentsHistoryTable = ({
+  payments,
+  currentPage = 1,
+  itemsPerPage = 10,
+}) => {
   return (
     <div>
       <div className="overflow-x-auto">
@@ -25,7 +35,9 @@ const PaymentsHistoryTable = ({ payments }) => {
                   className="hover:bg-[#F8FAFC]/50 transition-all group"
                 >
                   <td className="px-6 py-4 text-lg text-slate-400 font-medium">
-                    {(index + 1).toString().padStart(2, "0")}
+                    {String(
+                      (currentPage - 1) * itemsPerPage + index + 1,
+                    ).padStart(2, "0")}
                   </td>
                   {/* Parcel Info */}
                   <td className="px-8 py-7">
@@ -72,7 +84,7 @@ const PaymentsHistoryTable = ({ payments }) => {
                   <td className="px-8 py-7">
                     <div className="flex flex-col">
                       <span className="text-2xl font-black text-[#002B36]">
-                        ৳{payment.amount}
+                        ${payment.amount}
                       </span>
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                         {payment.currency}
