@@ -1,147 +1,115 @@
 "use client";
 
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import React, { useState } from "react";
+import { FiSearch, FiUsers, FiActivity } from "react-icons/fi";
 import useAuth from "@/Componets/utils/Hooks/useAuth";
-import { RiderTableSkeleton } from "@/Componets/Skeltons/RiderTableSkeleton";
-import RiderButton from "@/Componets/buttons/RiderButton";
+import RidersTable from "@/Componets/cards/RidersTable";
+import Pagination from "@/Componets/Shared/Pagination";
+import useRiders from "@/Componets/utils/Hooks/useRiders";
 
 const AllRiderpage = () => {
   const { user } = useAuth();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const {
-    data: riders = [],
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["Riders", user?.email],
-    enabled: !!user?.email,
-    queryFn: async () => {
-      const res = await axios.get("/api/riders");
-      if (res.data?.success) {
-        return res.data.data;
-      }
-      return [];
-    },
-  });
+  const { data, isLoading, isFetching } = useRiders(
+    user?.email,
+    search,
+    page
+  );
+
+  const riders = data?.data || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / 10);
+
+  // --- Premium Loading State ---
+  if (!user?.email || isLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[80vh]">
+        <div className="relative">
+          <div className="w-20 h-20 border-4 border-[#C6EB71]/20 border-t-[#002B36] rounded-full animate-spin"></div>
+          <FiUsers className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#002B36] text-xl" />
+        </div>
+        <p className="mt-6 text-[#002B36] font-bold tracking-widest animate-pulse uppercase text-sm">
+          Loading Rider Network...
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-[#002B36]">
-              Rider Management
-            </h1>
-            <p className="text-gray-500">
-              View and manage all rider applications
-            </p>
+    <div className="max-w-7xl mx-auto p-4 sm:p-10 pb-24 min-h-screen bg-[#F8FAFC]">
+      
+      {/* --- Header Section --- */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-[#002B36] text-[#C6EB71] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+            <FiActivity /> Operations Control
           </div>
-          <div className="bg-white px-6 py-2 rounded-2xl shadow-sm border border-gray-100">
-            <span className="text-sm font-semibold text-gray-400">Total: </span>
-            <span className="text-xl font-bold text-[#002B36]">
-              {riders.length}
-            </span>
-          </div>
-        </header>
+          <h1 className="text-5xl font-black text-[#002B36] tracking-tight">
+            Rider <span className="text-[#98B42C]">Management</span>
+          </h1>
+          <p className="text-gray-400 font-medium italic">
+            Monitor and manage your logistics force efficiently
+          </p>
+        </div>
 
-        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase">
-                    Rider Name
-                  </th>
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase">
-                    Contact Info
-                  </th>
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase">
-                    Vehicle
-                  </th>
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase">
-                    Location
-                  </th>
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase">
-                    Status
-                  </th>
-                  <th className="py-5 px-6 text-xs font-bold text-gray-400 uppercase text-center">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <RiderTableSkeleton />
-                ) : (
-                  riders.map((rider) => (
-                    <tr
-                      key={rider._id}
-                      className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
-                    >
-                      <td className="py-5 px-6">
-                        <div className="font-bold text-[#002B36]">
-                          {rider.name}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          Age: {rider.age}
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <div className="text-sm text-gray-600">
-                          {rider.email}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {rider.contact}
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-semibold">
-                          {rider.vehicle}
-                        </span>
-                      </td>
-                      <td className="py-5 px-6 text-sm text-gray-600">
-                        {rider.district}
-                      </td>
-                      <td className="py-5 px-6">
-                        <div className="flex flex-col gap-1">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase w-fit ${
-                              rider.status.toLowerCase() === "pending"
-                                ? "bg-orange-100 text-orange-600"
-                                : rider.status.toLowerCase() === "accepted"
-                                  ? "bg-green-100 text-green-600"
-                                  : "bg-red-100 text-red-600"
-                            }`}
-                          >
-                            {rider.status}
-                          </span>
-                          {/* রাইডারের নিজস্ব রোল যদি অ্যাডমিন হয় তবে ব্যাজ দেখাবে */}
-                          {rider.role === "admin" && (
-                            <span className="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase w-fit">
-                              System Admin
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <RiderButton rider={rider} user={user} />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        <div className="flex flex-col sm:flex-row gap-4 items-center w-full lg:w-auto">
+          {/* Enhanced Search Box */}
+          <div className="relative group w-full sm:w-80">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#98B42C] transition-colors" />
+            <input
+              type="text"
+              placeholder="Search by name or ID..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full pl-12 pr-10 py-4 rounded-2xl bg-white border border-gray-100 shadow-sm outline-none focus:ring-4 focus:ring-[#C6EB71]/20 focus:border-[#C6EB71] transition-all"
+            />
+            {isFetching && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-gray-200 border-t-[#002B36] rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
 
-          {!isLoading && riders.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-gray-400">No rider applications found.</p>
+          {/* Total Stats Card */}
+          <div className="bg-[#002B36] px-8 py-4 rounded-2xl shadow-xl shadow-[#002B36]/10 flex flex-col items-center justify-center min-w-[140px] w-full sm:w-auto">
+            <span className="text-[10px] text-[#C6EB71] font-bold uppercase tracking-tighter leading-none mb-1">Active Riders</span>
+            <span className="text-2xl font-black text-white leading-none">{total}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Table Container --- */}
+      <div className="relative group">
+        {/* Decorative background blur effect */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#C6EB71] to-[#002B36] rounded-[2.5rem] blur opacity-[0.03] group-hover:opacity-[0.06] transition-opacity"></div>
+        
+        <div className="relative bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-gray-200/50 overflow-hidden">
+          {riders.length > 0 ? (
+            <div className="overflow-x-auto">
+              <RidersTable riders={riders} isLoading={isLoading} user={user} />
+            </div>
+          ) : (
+            <div className="py-32 text-center">
+              <div className="inline-flex p-6 bg-gray-50 rounded-full mb-4">
+                <FiUsers size={40} className="text-gray-200" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-700">No Riders Found</h3>
+              <p className="text-gray-400 mt-1">Try adjusting your search or filters.</p>
             </div>
           )}
         </div>
       </div>
+
+      {/* --- Reusable Pagination --- */}
+      <div className="mt-8">
+        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+      </div>
+
     </div>
   );
 };

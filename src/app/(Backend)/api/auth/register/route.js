@@ -17,13 +17,13 @@ export async function POST(request) {
       const invitedUser = await usersCollection.findOne({
         email,
         invitationToken: token,
-        invitationExpires: { $gt: new Date() }
+        invitationExpires: { $gt: new Date() },
       });
 
       if (!invitedUser) {
         return Response.json(
           { success: false, message: "Invalid or expired invitation token." },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -40,18 +40,21 @@ export async function POST(request) {
             provider: "credentials",
             updatedAt: new Date(),
           },
-          $unset: { invitationToken: "", invitationExpires: "" } // টোকেন মুছে ফেলা
-        }
+          $unset: { invitationToken: "", invitationExpires: "" }, // টোকেন মুছে ফেলা
+        },
       );
 
-      return Response.json({ success: true, message: "Registration completed via invitation!" });
+      return Response.json({
+        success: true,
+        message: "Registration completed via invitation!",
+      });
     }
 
     // ৩. সাধারণ রেজিস্ট্রেশন লজিক (টোকেন ছাড়া)
     if (existingUser && existingUser.password) {
       return Response.json(
         { success: false, message: "User already exists with this email." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,9 +71,12 @@ export async function POST(request) {
             provider: "credentials",
             updatedAt: new Date(),
           },
-        }
+        },
       );
-      return Response.json({ success: true, message: "Password added to social account." });
+      return Response.json({
+        success: true,
+        message: "Password added to social account.",
+      });
     } else {
       // সম্পূর্ণ নতুন সাধারণ ইউজার
       const newUser = {
@@ -85,27 +91,72 @@ export async function POST(request) {
         updatedAt: new Date(),
       };
       await usersCollection.insertOne(newUser);
-      return Response.json({ success: true, message: "Registration successful" });
+      return Response.json({
+        success: true,
+        message: "Registration successful",
+      });
     }
   } catch (err) {
-    return Response.json({ success: false, error: err.message }, { status: 500 });
+    return Response.json(
+      { success: false, error: err.message },
+      { status: 500 },
+    );
   }
 }
 
-// GET Method (সব ইউজার দেখার জন্য)
-export async function GET() {
+export async function GET(request) {
   try {
     const user = await verifyToken();
     const isAdmin = await verifyAdmin();
 
     if (!user || !isAdmin) {
-      return Response.json({ success: false, message: "Unauthorized" }, { status: 403 });
+      return Response.json(
+        { success: false, message: "Unauthorized" },
+        { status: 403 },
+      );
     }
 
     const usersCollection = await getUsers();
-    const result = await usersCollection.find({}).toArray();
-    return Response.json({ success: true, message: result }, { status: 200 });
+    const { searchParams } = new URL(request.url);
+
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page")) || 1;
+
+    const limit = 10; // 🔥 fixed here
+    const skip = (page - 1) * limit;
+    const sort = {createdAt:-1}
+
+    const query = {};
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { role: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const result = await usersCollection
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .toArray();
+
+    const total = await usersCollection.countDocuments(query);
+
+    return Response.json({
+      success: true,
+      message: result,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
-    return Response.json({ success: false, error: err.message }, { status: 500 });
+    return Response.json(
+      { success: false, error: err.message },
+      { status: 500 },
+    );
   }
 }

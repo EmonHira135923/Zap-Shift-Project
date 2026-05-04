@@ -44,6 +44,13 @@ const Updateparcelpage = () => {
     return cost;
   };
 
+  useEffect(() => {
+    if (parcel?.paymentStatus === "paid") {
+      toast.warning("Paid parcels cannot be modified.");
+      router.push("/dashboard/parcels");
+    }
+  }, [parcel, router]);
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const form = e.target;

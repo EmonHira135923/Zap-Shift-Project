@@ -14,17 +14,46 @@ export async function GET(request) {
 
     const parcelCollections = await getParcels();
     const { searchParams } = new URL(request.url);
+
     const email = searchParams.get("email");
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page")) || 1;
+
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
     const query = {};
+
     if (email) {
       query.senderEmail = email;
     }
-    // console.log(query.senderEmail);
 
-    const options = { sort: { createdAt: -1 } };
+    if (search) {
+      query.$or = [
+        { trackingId: { $regex: search, $options: "i" } },
+        { receiverName: { $regex: search, $options: "i" } },
+        { parcelType: { $regex: search, $options: "i" } },
+        { parcelName: { $regex: search, $options: "i" } },
+        { paymentStatus: { $regex: search, $options: "i" } },
+      ];
+    }
 
-    const result = await parcelCollections.find(query, options).toArray();
-    return Response.json({ success: true, message: result }, { status: 200 });
+    const result = await parcelCollections
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    const total = await parcelCollections.countDocuments(query);
+
+    return Response.json({
+      success: true,
+      message: result,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
     return Response.json(
       { success: false, error: err.message },
@@ -32,7 +61,6 @@ export async function GET(request) {
     );
   }
 }
-
 
 export async function POST(request) {
   try {

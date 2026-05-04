@@ -4,8 +4,8 @@ import { verifyToken } from "../../middlewares/verifyToken";
 
 export async function GET(request) {
   try {
-    // ১. ইউজার লগইন করা আছে কিনা চেক (Token Verification)
     const user = await verifyToken(request);
+
     if (!user) {
       return Response.json(
         { success: false, message: "Unauthorized access" },
@@ -23,14 +23,43 @@ export async function GET(request) {
     }
 
     const ridersCollection = await getRiders();
+    const { searchParams } = new URL(request.url);
 
-    // ৩. সব রাইডারদের ডাটা নিয়ে আসা (সর্টিং সহ)
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page")) || 1;
+
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { contact: { $regex: search, $options: "i" } },
+        { district: { $regex: search, $options: "i" } },
+        { vehicle: { $regex: search, $options: "i" } },
+        { status: { $regex: search, $options: "i" } },
+      ];
+    }
+
     const result = await ridersCollection
-      .find()
+      .find(query)
       .sort({ appliedAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
 
-    return Response.json({ success: true, data: result }, { status: 200 });
+    const total = await ridersCollection.countDocuments(query);
+
+    return Response.json({
+      success: true,
+      data: result,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
     return Response.json(
       { success: false, message: err.message },

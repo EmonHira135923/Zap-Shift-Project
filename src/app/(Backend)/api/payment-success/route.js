@@ -45,6 +45,8 @@ export async function PATCH(request) {
       parcelName: parcelName,
       customer_phone: phone,
       customer_email: session.customer_email,
+      trackingId: newTrackingId,
+      paymentStatus: "paid",
       paidAt: new Date(),
     };
 
@@ -53,6 +55,7 @@ export async function PATCH(request) {
       $set: {
         paymentStatus: "paid",
         trackingId: newTrackingId,
+        transactionId: session.payment_intent,
         updatedAt: new Date(),
       },
     };
@@ -89,40 +92,58 @@ export async function PATCH(request) {
 export async function GET(request) {
   try {
     const user = await verifyToken();
-    console.log("Verified User from Token:", user); // চেক করুন ইমেইল আছে কি না
 
     if (!user || !user.email) {
       return Response.json(
-        { success: false, message: "Unauthorized: No email found in token" },
-        { status: 401 },
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
       );
     }
 
     const { searchParams } = new URL(request.url);
-    const emailFromQuery = searchParams.get("email");
-    console.log("Email from URL Query:", emailFromQuery);
 
-    // সিকিউরিটি চেক: কুয়েরি ইমেইল আর টোকেন ইমেইল এক কি না
-    if (emailFromQuery && emailFromQuery !== user.email) {
-      console.warn("Security Alert: Email mismatch!");
-    }
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page")) || 1;
+
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
     const paymentsCollections = await getPayments();
 
-    // টোকেনের ইমেইল ব্যবহার করাই সবচেয়ে নিরাপদ
+    const query = {
+      customer_email: user.email,
+    };
+
+    if (search) {
+      query.$or = [
+        { transactionId: { $regex: search, $options: "i" } },
+        { parcelName: { $regex: search, $options: "i" } },
+        { customerName: { $regex: search, $options: "i" } },
+        { customer_phone: { $regex: search, $options: "i" } },
+        { paymentStatus: { $regex: search, $options: "i" } },
+      ];
+    }
+
     const result = await paymentsCollections
-      .find({ customer_email: user.email })
+      .find(query)
       .sort({ paidAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
 
-    console.log(`Found ${result.length} payments for: ${user.email}`);
+    const total = await paymentsCollections.countDocuments(query);
 
-    return Response.json({ success: true, result: result }, { status: 200 });
+    return Response.json({
+      success: true,
+      result,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
-    console.error("Backend Error:", err.message);
     return Response.json(
       { success: false, error: err.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

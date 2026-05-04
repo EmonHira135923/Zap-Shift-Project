@@ -7,8 +7,10 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const ParcelButton = ({ parcel }) => {
-  const { _id, parcelName } = parcel;
+  const { _id, parcelName, paymentStatus } = parcel; // paymentStatus নিয়ে আসলাম
   const queryClient = useQueryClient();
+
+  const isPaid = paymentStatus === "paid"; // চেক করছি পেইড কি না
 
   const handleDelete = async (id) => {
     try {
@@ -25,9 +27,8 @@ const ParcelButton = ({ parcel }) => {
   };
 
   return (
-    /* inline-flex keeps the button group tight — never stretches full width */
     <div className="inline-flex items-center justify-end gap-2 w-full">
-      {/* View Button */}
+      {/* View Button - সবসময় চালু থাকবে */}
       <Link
         href={`/dashboard/parcels/${_id}`}
         title="View Details"
@@ -36,58 +37,58 @@ const ParcelButton = ({ parcel }) => {
         <LuEye size={16} />
       </Link>
 
-      {/* Edit Button
-      <Link
-        href={`/dashboard/parcels/update-parcel/${_id}`}
-        title="Edit Parcel"
-        className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm flex-shrink-0"
-      >
-        <LuPencilLine size={16} />
-      </Link> */}
+      {/* Edit Button - পেইড হলে ডিসেবল */}
+      {isPaid ? (
+        <span 
+          title="Paid parcels cannot be edited"
+          className="p-2.5 bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed shadow-sm flex-shrink-0"
+        >
+          <LuPencilLine size={16} />
+        </span>
+      ) : (
+        <Link
+          href={`/dashboard/parcels/update-parcel/${_id}`}
+          title="Edit Parcel"
+          className="p-2.5 bg-orange-50 text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm flex-shrink-0"
+        >
+          <LuPencilLine size={16} />
+        </Link>
+      )}
 
-      {/* Delete Trigger Button */}
+      {/* Delete Button - পেইড হলে ডিসেবল */}
       <button
-        onClick={() => document.getElementById(`modal_${_id}`).showModal()}
-        title="Delete Parcel"
-        className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm flex-shrink-0"
+        onClick={() => !isPaid && document.getElementById(`modal_${_id}`).showModal()}
+        disabled={isPaid}
+        title={isPaid ? "Paid parcels cannot be deleted" : "Delete Parcel"}
+        className={`p-2.5 rounded-xl transition-all shadow-sm flex-shrink-0 ${
+          isPaid 
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+            : "bg-red-50 text-red-600 hover:bg-red-600 hover:text-white"
+        }`}
       >
         <LuTrash2 size={16} />
       </button>
 
       {/* DaisyUI Confirmation Modal */}
-      <dialog
-        id={`modal_${_id}`}
-        className="modal modal-bottom sm:modal-middle"
-      >
-        <div className="modal-box bg-white rounded-[2rem]">
-          <h3 className="font-black text-xl text-gray-800">Are you sure?</h3>
-          <p className="py-4 text-gray-500 font-medium">
-            Do you really want to delete{" "}
-            <span className="text-red-500 font-bold">"{parcelName}"</span>? This
-            action cannot be undone.
-          </p>
-
-          <div className="modal-action gap-3">
-            <form method="dialog" className="flex gap-2">
-              <button className="btn bg-gray-100 hover:bg-gray-200 border-none text-gray-600 rounded-xl px-6">
-                Cancel
+      {!isPaid && (
+        <dialog id={`modal_${_id}`} className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box bg-white rounded-[2rem]">
+            <h3 className="font-black text-xl text-gray-800">Are you sure?</h3>
+            <p className="py-4 text-gray-500 font-medium">
+              Do you really want to delete <span className="text-red-500 font-bold">"{parcelName}"</span>?
+            </p>
+            <div className="modal-action gap-3">
+              <form method="dialog" className="flex gap-2">
+                <button className="btn bg-gray-100 hover:bg-gray-200 border-none text-gray-600 rounded-xl px-6">Cancel</button>
+              </form>
+              <button onClick={() => handleDelete(_id)} className="btn bg-red-500 hover:bg-red-600 border-none text-white rounded-xl px-6">
+                Confirm Delete
               </button>
-            </form>
-
-            <button
-              onClick={() => handleDelete(_id)}
-              className="btn bg-red-500 hover:bg-red-600 border-none text-white rounded-xl px-6"
-            >
-              Confirm Delete
-            </button>
+            </div>
           </div>
-        </div>
-
-        {/* Backdrop */}
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+          <form method="dialog" className="modal-backdrop"><button>close</button></form>
+        </dialog>
+      )}
     </div>
   );
 };
