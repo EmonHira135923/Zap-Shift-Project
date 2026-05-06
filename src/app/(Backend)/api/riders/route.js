@@ -28,10 +28,26 @@ export async function GET(request) {
     const search = searchParams.get("search");
     const page = parseInt(searchParams.get("page")) || 1;
 
+    const workStatus = searchParams.get("workStatus");
+    const status = searchParams.get("status");
+    const district = searchParams.get("district");
+
     const limit = 10;
     const skip = (page - 1) * limit;
 
     const query = {};
+
+    if (workStatus) {
+      query.workStatus = workStatus;
+    }
+    if (status) {
+      query.status = status;
+    }
+    if (district) {
+      query.district = district;
+    }
+
+    console.log("data", workStatus, status, district);
 
     if (search) {
       query.$or = [
@@ -43,6 +59,10 @@ export async function GET(request) {
         { status: { $regex: search, $options: "i" } },
       ];
     }
+
+    // const body  = await request.json();
+
+    // console.log("data",body);
 
     const result = await ridersCollection
       .find(query)

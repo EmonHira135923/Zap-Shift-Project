@@ -18,7 +18,7 @@ import {
 } from "react-icons/lu";
 
 import useAuth from "../utils/Hooks/useAuth";
-import { FiPlusCircle, FiUsers } from "react-icons/fi";
+import { FiPlusCircle, FiTruck, FiUsers } from "react-icons/fi";
 import { Bike, Motorbike } from "lucide-react";
 import DashboardAsideNavSkeleton from "../Skeltons/DashboardAsideNavSkeleton";
 
@@ -102,6 +102,12 @@ const ROUTES = [
         icon: <FiPlusCircle className="w-4 h-4" />,
         roles: ["admin", "user", "rider"],
       },
+      {
+        label: "Assign Delivery",
+        href: "/dashboard/rider/assign-delivery",
+        icon: <FiTruck className="w-4 h-4" />,
+        roles: ["rider"],
+      },
     ],
   },
   {
@@ -141,9 +147,7 @@ const Aside = ({ sidebarOpen, onClose, collapsed }) => {
         className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out
           ${collapsed ? "md:w-[85px]" : "md:w-64"}
           ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
+            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }
           w-64
         `}

@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const privateRoutes = ["/be-a-rider", "/send-parcel", "/dashboard", "/profile"];
-const adminRoutes = ["/dashboard/users", "/dashboard/users/add","/dashboard/rider/all-riders"];
+const adminRoutes = [
+  "/dashboard/users",
+  "/dashboard/users/add",
+  "/dashboard/rider/all-riders",
+];
+const riderRoutes = ["/dashboard/rider/assign-delivery"];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;
@@ -19,6 +24,7 @@ export async function proxy(request) {
   );
 
   const isAdminRoute = adminRoutes.some((route) => reqpath.startsWith(route));
+  const isRiderRoute = riderRoutes.some((route) => reqpath.startsWith(route));
 
   const isPaymentRoute =
     reqpath.includes("payment-success") || reqpath.includes("payment-cancel");
@@ -53,6 +59,26 @@ export async function proxy(request) {
       const { payload } = await jwtVerify(accessToken, secret);
 
       const isAdmin = payload?.role === "admin";
+
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/forbidden", request.url));
+      }
+    } catch (error) {
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+  }
+
+  if (isRiderRoute) {
+    if (!accessToken) {
+      return NextResponse.redirect(new URL("/forbidden", request.url));
+    }
+
+    try {
+      const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+
+      const { payload } = await jwtVerify(accessToken, secret);
+
+      const isAdmin = payload?.role === "rider";
 
       if (!isAdmin) {
         return NextResponse.redirect(new URL("/forbidden", request.url));

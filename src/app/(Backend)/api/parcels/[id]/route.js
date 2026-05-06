@@ -1,4 +1,4 @@
-import { getParcels } from "@/app/(Backend)/lib/dbConnect";
+import { getParcels, getRiders } from "@/app/(Backend)/lib/dbConnect";
 import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 import { ObjectId } from "mongodb";
 
@@ -43,35 +43,55 @@ export async function PATCH(request, { params }) {
         { status: 401 },
       );
     }
+
     const { id } = await params;
     const body = await request.json();
+
     const parcelCollection = await getParcels();
+    const ridersCollection = await getRiders();
 
-    // ১. Sender-er sensitive info block kora (Security)
-    const { senderName, senderEmail, senderPhone, _id, ...updateData } = body;
+    const { riderId, riderEmail, riderName } = body;
 
-    // ২. Database Update
-    // Frontend theke asha data-te ekhon cost, parcelWeight sob thakbe
-    const result = await parcelCollection.updateOne(
+    const parcelResult = await parcelCollection.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
-          ...updateData, // Ekhane cost: liveCost auto chole asbe
+          riderId,
+          riderEmail,
+          riderName,
+          DeliveryStatus: "rider assigned",
           updatedAt: new Date(),
         },
       },
     );
 
-    if (result.matchedCount === 0) {
+    if (parcelResult.matchedCount === 0) {
       return Response.json(
         { success: false, message: "Parcel not found" },
         { status: 404 },
       );
     }
 
+    const riderResult = await ridersCollection.updateOne(
+      { _id: new ObjectId(riderId) },
+      {
+        $set: {
+          workStatus: "In-Transit",
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    if (riderResult.matchedCount === 0) {
+      return Response.json(
+        { success: false, message: "Rider not found" },
+        { status: 404 },
+      );
+    }
+
     return Response.json({
       success: true,
-      message: "Parcel updated successfully!",
+      message: "Rider assigned successfully!",
     });
   } catch (error) {
     return Response.json(

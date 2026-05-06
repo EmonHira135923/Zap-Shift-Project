@@ -1,6 +1,7 @@
 import React from "react";
 import { FiAlertCircle, FiUserPlus } from "react-icons/fi";
 import AssignRiderPageSkeleton from "../Skeltons/AssignRiderPageSkeleton";
+import { Search } from "lucide-react";
 
 const AssignRidersTable = ({
   parcels,
@@ -9,6 +10,7 @@ const AssignRidersTable = ({
   authLoading,
   isLoading,
   error,
+  onAssignClick,
 }) => {
   console.log(parcels);
   return (
@@ -91,10 +93,13 @@ const AssignRidersTable = ({
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button className="inline-flex items-center gap-2 px-4 py-2 bg-[#002B36] text-[#C6EB71] rounded-xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200">
-                    <FiUserPlus size={14} />
+                  <button
+                    onClick={() => onAssignClick(p)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#002B36] text-[#C6EB71] rounded-xl hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+                  >
+                    <Search size={14} />
                     <span className="text-[10px] font-black uppercase tracking-tighter">
-                      Assign Rider
+                      Find Rider
                     </span>
                   </button>
                 </td>

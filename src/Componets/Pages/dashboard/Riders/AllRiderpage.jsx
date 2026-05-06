@@ -10,10 +10,22 @@ import AllRidersPageSkeleton from "@/Componets/Skeltons/AllRidersPageSkeleton";
 
 const AllRiderpage = () => {
   const { user } = useAuth();
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isFetching } = useRiders(user?.email, search, page);
+  const [workStatus, setWorkStatus] = useState("");
+  const [status, setStatus] = useState("");
+  const [district, setDistrict] = useState("");
+
+  const { data, isLoading, isFetching } = useRiders({
+    email: user?.email,
+    search,
+    page,
+    workStatus,
+    status,
+    district,
+  });
 
   const riders = data?.data || [];
   const total = data?.total || 0;
