@@ -7,7 +7,10 @@ const adminRoutes = [
   "/dashboard/users/add",
   "/dashboard/rider/all-riders",
 ];
-const riderRoutes = ["/dashboard/rider/assign-delivery"];
+const riderRoutes = [
+  "/dashboard/rider/assign-delivery",
+  "/dashboard/rider/complete-delivery",
+];
 
 export async function proxy(request) {
   const reqpath = request.nextUrl.pathname;

@@ -15,7 +15,9 @@ const AssignDeliveryButton = ({ parcel }) => {
 
   const modalId = `delivery_confirm_modal_${parcel?._id}`;
   const currentStatus = localStatus ?? parcel?.DeliveryStatus;
-  const normalizedStatus = String(currentStatus || "").trim().toLowerCase();
+  const normalizedStatus = String(currentStatus || "")
+    .trim()
+    .toLowerCase();
   const isAcceptedDelivery = ["accepted", "rider arriving"].includes(
     normalizedStatus,
   );
@@ -43,6 +45,7 @@ const AssignDeliveryButton = ({ parcel }) => {
 
       const res = await axios.patch(`/api/parcels/${parcel._id}/status`, {
         action: pendingAction,
+        trackingId: parcel.trackingId, // এই লাইনটি যোগ করুন
       });
 
       if (res.data.success) {

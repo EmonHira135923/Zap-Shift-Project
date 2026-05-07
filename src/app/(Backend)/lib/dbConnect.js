@@ -52,3 +52,9 @@ export const getRiders = async () => {
   const database = await connectDB();
   return database.collection("Riders");
 };
+
+// Trackings
+export const getTracking = async () => {
+  const database = await connectDB();
+  return database.collection("Trackings");
+};

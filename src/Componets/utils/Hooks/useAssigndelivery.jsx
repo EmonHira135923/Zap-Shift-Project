@@ -14,12 +14,14 @@ const ASSIGNED_DELIVERY_STATUSES = [
 
 const useAssigndelivery = ({
   riderEmail,
+  trackingId, // এখানে trackingId প্যারামিটার যোগ করুন
   search = "",
   page = 1,
   enabled = true,
 }) => {
   return useQuery({
-    queryKey: ["assigned-delivery", riderEmail, search, page],
+    // queryKey তে trackingId যোগ করুন যাতে এটি পরিবর্তন হলে ডাটা রি-ফেচ হয়
+    queryKey: ["assigned-delivery", riderEmail, trackingId, search, page],
 
     enabled: !!riderEmail && enabled,
 
@@ -30,12 +32,16 @@ const useAssigndelivery = ({
       params.append("paymentStatus", "paid");
       params.append("page", String(page));
 
+      // যদি trackingId থাকে তবেই ফিল্টার হিসেবে পাঠাবে
+      if (trackingId) {
+        params.append("trackingId", trackingId);
+      }
+
       if (search) {
         params.append("search", search);
       }
 
       const res = await axios.get(`/api/parcels/rider?${params.toString()}`);
-
       return res.data;
     },
   });

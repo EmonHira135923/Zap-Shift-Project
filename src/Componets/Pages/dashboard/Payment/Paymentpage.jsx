@@ -41,6 +41,7 @@ const Paymentpage = () => {
       senderName: parcel.senderName,
       senderEmail: parcel.senderEmail,
       phone: parcel.senderPhone,
+      trackingId: parcel.trackingId
     };
     const res = await axios.post(`/api/checkout`, paymentinfo);
     console.log(res.data.result);

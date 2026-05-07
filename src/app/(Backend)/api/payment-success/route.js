@@ -1,14 +1,13 @@
 import { ObjectId } from "mongodb";
 import Stripe from "stripe";
 import { getParcels, getPayments } from "../../lib/dbConnect";
-import { generateTrackingId } from "../../lib/generateTrackingId";
 import { verifyToken } from "../../middlewares/verifyToken";
+import { logTracking } from "../../lib/logTracking";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function PATCH(request) {
   try {
-    // ১. রিকোয়েস্ট থেকে সেশন আইডি সংগ্রহ
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("session_id");
 
@@ -19,21 +18,36 @@ export async function PATCH(request) {
     // ২. স্ট্রাইপ থেকে পেমেন্ট সেশন রিট্রিভ করা
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // ৩. পেমেন্ট স্ট্যাটাস চেক করা
     if (session.payment_status !== "paid") {
       return Response.json(
-        { success: false, message: "Not paid" },
+        { success: false, message: "Payment not verified" },
         { status: 400 },
       );
     }
 
-    // ৪. সেশন মেটাডাটা এবং প্রয়োজনীয় ভেরিয়েবল তৈরি
-    const { parcelId, customer, phone, parcelName } = session.metadata;
-    const newTrackingId = generateTrackingId();
+    const {
+      parcelId,
+      customer,
+      phone,
+      parcelName,
+      trackingId: newTrackingId,
+    } = session.metadata;
 
     // ৫. ডাটাবেস কালেকশন কানেক্ট করা
     const paymentsCollection = await getPayments();
     const parcelsCollection = await getParcels();
+
+    // *** গুরুত্বপূর্ণ: ডুপ্লিকেট পেমেন্ট চেক ***
+    const existingPayment = await paymentsCollection.findOne({
+      transactionId: session.payment_intent,
+    });
+    if (existingPayment) {
+      return Response.json({
+        success: true,
+        message: "Payment already processed",
+        trackingId: newTrackingId,
+      });
+    }
 
     // ৬. পেমেন্ট রেকর্ডের ডাটা অবজেক্ট তৈরি
     const paymentRecord = {
@@ -44,27 +58,31 @@ export async function PATCH(request) {
       currency: session.currency,
       parcelName: parcelName,
       customer_phone: phone,
-      customer_email: session.customer_email,
+      customer_email: session.customer_email || session.metadata.email,
       trackingId: newTrackingId,
       paymentStatus: "paid",
       paidAt: new Date(),
     };
 
-    // ৭. পার্সেল আপডেটের ডাটা অবজেক্ট তৈরি
+    // ৭. পার্সেল আপডেটের লজিক (Atomic Update)
     const parcelUpdate = {
       $set: {
         paymentStatus: "paid",
         trackingId: newTrackingId,
         transactionId: session.payment_intent,
-        DeliveryStatus: "pending pickup",
+        DeliveryStatus: "pending pickup", // স্পেলিং ছোট হাতের রাখা ভালো (Consistency)
         updatedAt: new Date(),
       },
     };
 
-    // ৮. ডাটাবেসে পেমেন্ট ডাটা সেভ করা
-    if (session.payment_status == "paid") {
-      await paymentsCollection.insertOne(paymentRecord);
-    }
+    // ৮. ডাটাবেসে পেমেন্ট ডাটা সেভ এবং ট্র্যাকিং লগ তৈরি
+    // এখানে logTracking ফাংশনটি আপনার ট্র্যাকিং সিস্টেমের টাইমলাইনে প্রথম এন্ট্রি দিবে
+    await logTracking(
+      newTrackingId,
+      "pending-pickup",
+      "Your payment is successful. Waiting for courier pickup.",
+    );
+    await paymentsCollection.insertOne(paymentRecord);
 
     // ৯. পার্সেল কালেকশনে তথ্য আপডেট করা
     const result = await parcelsCollection.updateOne(
@@ -72,20 +90,17 @@ export async function PATCH(request) {
       parcelUpdate,
     );
 
-    // ১০. সাকসেস রেসপন্স পাঠানো
     return Response.json(
       {
         success: true,
-        message: "Payment history saved & Parcel card updated",
+        message: "Payment confirmed & tracking started",
         trackingId: newTrackingId,
         transactionId: session.payment_intent,
-        result: result,
       },
       { status: 200 },
     );
   } catch (error) {
-    // ১১. এরর হ্যান্ডলিং
-    console.error("Error:", error.message);
+    console.error("Payment Confirmation Error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
 }

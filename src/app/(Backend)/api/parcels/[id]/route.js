@@ -1,4 +1,5 @@
 import { getParcels, getRiders } from "@/app/(Backend)/lib/dbConnect";
+import { logTracking } from "@/app/(Backend)/lib/logTracking";
 import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 import { ObjectId } from "mongodb";
 
@@ -50,7 +51,7 @@ export async function PATCH(request, { params }) {
     const parcelCollection = await getParcels();
     const ridersCollection = await getRiders();
 
-    const { riderId, riderEmail, riderName } = body;
+    const { riderId, riderEmail, riderName, trackingId } = body;
 
     const parcelResult = await parcelCollection.updateOne(
       { _id: new ObjectId(id) },
@@ -81,6 +82,8 @@ export async function PATCH(request, { params }) {
         },
       },
     );
+
+    await logTracking(trackingId, "rider assigned");
 
     if (riderResult.matchedCount === 0) {
       return Response.json(

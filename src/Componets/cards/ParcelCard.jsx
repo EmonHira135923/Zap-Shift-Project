@@ -75,13 +75,18 @@ const ParcelCard = ({ parcels, currentPage = 1, itemsPerPage = 10 }) => {
                     </div>
                   </td>
 
+                  {/* Tracking ID with Link */}
                   <td className="px-5 py-4 text-center">
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500 rounded-md">
-                      <LuHash size={11} />
-                      <span className="text-[11px] font-black tracking-wider uppercase">
-                        {parcel.trackingId}
-                      </span>
-                    </div>
+                    <Link
+                      href={`/public/product-tracking/${parcel.trackingId}`}
+                    >
+                      <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-500 rounded-md hover:bg-[#C6EB71]/20 hover:text-[#002B36] transition-all cursor-pointer group/track">
+                        <LuHash size={11} />
+                        <span className="text-[11px] font-black tracking-wider uppercase">
+                          {parcel.trackingId}
+                        </span>
+                      </div>
+                    </Link>
                   </td>
 
                   <td className="px-5 py-4 text-center">

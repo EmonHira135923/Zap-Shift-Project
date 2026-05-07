@@ -19,7 +19,7 @@ import {
 
 import useAuth from "../utils/Hooks/useAuth";
 import { FiPlusCircle, FiTruck, FiUsers } from "react-icons/fi";
-import { Bike, Motorbike } from "lucide-react";
+import { Bike, CheckCircle2, Motorbike } from "lucide-react";
 import DashboardAsideNavSkeleton from "../Skeltons/DashboardAsideNavSkeleton";
 
 const ROUTES = [
@@ -106,6 +106,12 @@ const ROUTES = [
         label: "Assign Delivery",
         href: "/dashboard/rider/assign-delivery",
         icon: <FiTruck className="w-4 h-4" />,
+        roles: ["rider"],
+      },
+      {
+        label: "Complete Delivery",
+        href: "/dashboard/rider/complete-delivery",
+        icon: <CheckCircle2 className="w-4 h-4" />, // Lucide React বা অন্য লাইব্রেরি থেকে আইকনটি ইমপোর্ট করে নিবেন
         roles: ["rider"],
       },
     ],

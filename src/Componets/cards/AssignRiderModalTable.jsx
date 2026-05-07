@@ -17,6 +17,7 @@ const AssignRiderModalTable = ({ riders, selectedParcel }) => {
         riderEmail: rider.email,
         riderName: rider.name,
         parcelId: selectedParcel._id,
+        trackingId: selectedParcel.trackingId,
       };
 
       const res = await axios.patch(
