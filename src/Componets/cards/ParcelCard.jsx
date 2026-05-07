@@ -75,18 +75,53 @@ const ParcelCard = ({ parcels, currentPage = 1, itemsPerPage = 10 }) => {
                     </div>
                   </td>
 
-                  {/* Tracking ID with Link */}
+                  {/* Tracking ID Section with "Click to Track" Indicator */}
                   <td className="px-5 py-4 text-center">
-                    <Link
-                      href={`/public/product-tracking/${parcel.trackingId}`}
-                    >
-                      <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-500 rounded-md hover:bg-[#C6EB71]/20 hover:text-[#002B36] transition-all cursor-pointer group/track">
-                        <LuHash size={11} />
-                        <span className="text-[11px] font-black tracking-wider uppercase">
-                          {parcel.trackingId}
-                        </span>
-                      </div>
-                    </Link>
+                    <div className="flex flex-col items-center gap-1">
+                      {/* উপরের ছোট নির্দেশিকা লেবেল */}
+                      <span className="text-[9px] font-black text-[#98B42C] uppercase tracking-[0.15em] animate-pulse">
+                        Click to Track
+                      </span>
+
+                      <Link
+                        href={`/public/product-tracking/${parcel.trackingId}`}
+                        className="relative group/track"
+                      >
+                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-100 text-gray-700 rounded-xl hover:border-[#98B42C] hover:bg-[#C6EB71]/10 hover:text-[#002B36] transition-all duration-300 cursor-pointer shadow-sm active:scale-95">
+                          {/* এনিমেটেড পালস ডট */}
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#98B42C] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#98B42C]"></span>
+                          </span>
+
+                          {/* মেইন ট্র্যাকিং আইডি */}
+                          <span className="text-[12px] font-mono font-black tracking-widest uppercase">
+                            {parcel.trackingId}
+                          </span>
+
+                          {/* এক্সটারনাল অ্যারো আইকন */}
+                          <svg
+                            className="w-3.5 h-3.5 opacity-40 group-hover/track:opacity-100 group-hover/track:translate-x-1 transition-all duration-300 text-[#98B42C]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="3"
+                              d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                          </svg>
+                        </div>
+
+                        {/* নিচের টুলটিপ (ঐচ্ছিক) */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-[#002B36] text-[#C6EB71] text-[10px] font-bold rounded opacity-0 group-hover/track:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 shadow-xl">
+                          View Live Location
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-bottom-[#002B36]"></div>
+                        </div>
+                      </Link>
+                    </div>
                   </td>
 
                   <td className="px-5 py-4 text-center">
