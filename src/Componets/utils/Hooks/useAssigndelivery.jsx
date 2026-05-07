@@ -7,6 +7,8 @@ const ASSIGNED_DELIVERY_STATUSES = [
   "rider assigned",
   "Rider Arriving",
   "accepted",
+  "picked up",
+  // "delivered",
   "rejected",
 ];
 
@@ -23,7 +25,6 @@ const useAssigndelivery = ({
 
     queryFn: async () => {
       const params = new URLSearchParams();
-
       params.append("riderEmail", riderEmail);
       params.append("DeliveryStatus", ASSIGNED_DELIVERY_STATUSES.join(","));
       params.append("paymentStatus", "paid");

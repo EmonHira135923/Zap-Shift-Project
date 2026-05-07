@@ -21,7 +21,8 @@ const DeliveryAssignRiderpage = () => {
 
   const parcels = data?.data || [];
   const total = data?.total || 0;
-  const totalPages = Math.ceil(total / 10);
+  const itemsPerPage = data?.limit || 10;
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-10 pb-20 bg-[#F8FAFC] min-h-screen">
@@ -64,6 +65,8 @@ const DeliveryAssignRiderpage = () => {
         parcels={parcels}
         isLoading={isLoading || authLoading}
         error={error}
+        currentPage={page}
+        itemsPerPage={itemsPerPage}
       />
 
       {totalPages > 1 && (

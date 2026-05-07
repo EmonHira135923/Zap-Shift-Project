@@ -19,6 +19,8 @@ const AssignDeliveryButton = ({ parcel }) => {
   const isAcceptedDelivery = ["accepted", "rider arriving"].includes(
     normalizedStatus,
   );
+  const isPickedUpDelivery = normalizedStatus === "picked up";
+  const isDeliveredDelivery = normalizedStatus === "delivered";
   const isRejectedDelivery = normalizedStatus === "rejected";
 
   const openConfirmModal = (action) => {
@@ -73,8 +75,8 @@ const AssignDeliveryButton = ({ parcel }) => {
 
   if (isAcceptedDelivery) {
     return (
-      <div className="flex justify-end">
-        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C6EB71]/30 border border-[#C6EB71]/60 text-[#002B36] text-[10px] font-black uppercase tracking-wider">
+      <div className="flex justify-start">
+        <span className="inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-full border border-[#C6EB71]/70 bg-[#C6EB71]/25 px-3.5 text-[10px] font-black uppercase tracking-wide text-[#002B36]">
           <FiCheckCircle size={14} />
           Accepted
         </span>
@@ -84,8 +86,8 @@ const AssignDeliveryButton = ({ parcel }) => {
 
   if (isRejectedDelivery) {
     return (
-      <div className="flex justify-end">
-        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 border border-red-100 text-red-500 text-[10px] font-black uppercase tracking-wider">
+      <div className="flex justify-start">
+        <span className="inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-full border border-red-100 bg-red-50 px-3.5 text-[10px] font-black uppercase tracking-wide text-red-500">
           <FiXCircle size={14} />
           Rejected
         </span>
@@ -93,22 +95,48 @@ const AssignDeliveryButton = ({ parcel }) => {
     );
   }
 
+  if (isPickedUpDelivery) {
+    return (
+      <div className="flex justify-start">
+        <span className="inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-full border border-sky-100 bg-sky-50 px-3.5 text-[10px] font-black uppercase tracking-wide text-sky-600">
+          <FiCheckCircle size={14} />
+          Picked Up
+        </span>
+      </div>
+    );
+  }
+
+  if (isDeliveredDelivery) {
+    return (
+      <div className="flex justify-start">
+        <span className="inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-full border border-emerald-100 bg-emerald-50 px-3.5 text-[10px] font-black uppercase tracking-wide text-emerald-600">
+          <FiCheckCircle size={14} />
+          Delivered
+        </span>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-start gap-2">
         <button
+          type="button"
           disabled={!!loadingAction}
           onClick={() => openConfirmModal("accept")}
-          className="px-4 py-2 rounded-xl bg-[#C6EB71] text-[#002B36] text-[10px] font-black uppercase tracking-wider hover:bg-[#b4dc55] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#C6EB71] px-3.5 text-[10px] font-black uppercase tracking-wide text-[#002B36] transition-all hover:bg-[#b4dc55] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <FiCheckCircle size={13} />
           Accept
         </button>
 
         <button
+          type="button"
           disabled={!!loadingAction}
           onClick={() => openConfirmModal("reject")}
-          className="px-4 py-2 rounded-xl bg-red-50 border border-red-100 text-red-500 text-[10px] font-black uppercase tracking-wider hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-red-100 bg-red-50 px-3.5 text-[10px] font-black uppercase tracking-wide text-red-500 transition-all hover:bg-red-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <FiXCircle size={13} />
           Reject
         </button>
       </div>
@@ -126,13 +154,13 @@ const AssignDeliveryButton = ({ parcel }) => {
           closeConfirmModal();
         }}
       >
-        <div className="modal-box max-w-lg bg-white rounded-[2rem] p-8 text-center shadow-2xl">
-          <div className="flex justify-center mb-5">
+        <div className="modal-box max-w-lg rounded-2xl bg-white p-8 text-center shadow-2xl">
+          <div className="mb-5 flex justify-center">
             <div
               className={
                 pendingAction === "accept"
-                  ? "w-16 h-16 rounded-full bg-[#C6EB71]/30 text-[#002B36] flex items-center justify-center"
-                  : "w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center"
+                  ? "flex h-16 w-16 items-center justify-center rounded-full bg-[#C6EB71]/30 text-[#002B36]"
+                  : "flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500"
               }
             >
               {pendingAction === "accept" ? (
@@ -143,7 +171,7 @@ const AssignDeliveryButton = ({ parcel }) => {
             </div>
           </div>
 
-          <h3 className="font-black text-2xl text-[#002B36] mb-3">
+          <h3 className="mb-3 text-2xl font-black text-[#002B36]">
             {pendingAction === "accept"
               ? "Accept Delivery?"
               : "Reject Delivery?"}
@@ -163,12 +191,12 @@ const AssignDeliveryButton = ({ parcel }) => {
             this parcel?
           </p>
 
-          <div className="mt-6 bg-gray-50 border border-gray-100 rounded-2xl p-5 text-center">
+          <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-5 text-center">
             <p className="text-base font-black text-[#002B36]">
               {parcel?.parcelName}
             </p>
 
-            <p className="text-xs text-gray-400 font-bold mt-2">
+            <p className="mt-2 text-xs font-bold text-gray-400">
               Tracking ID:{" "}
               <span className="text-gray-500">{parcel?.trackingId}</span>
             </p>
@@ -186,7 +214,7 @@ const AssignDeliveryButton = ({ parcel }) => {
               type="button"
               onClick={closeConfirmModal}
               disabled={!!loadingAction}
-              className="min-w-[110px] px-5 py-3 rounded-xl border border-gray-200 bg-white text-gray-500 text-xs font-black uppercase hover:bg-gray-50 transition-all disabled:opacity-50"
+              className="min-w-[110px] rounded-full border border-gray-200 bg-white px-5 py-3 text-xs font-black uppercase text-gray-500 transition-all hover:bg-gray-50 disabled:opacity-50"
             >
               Cancel
             </button>
@@ -197,8 +225,8 @@ const AssignDeliveryButton = ({ parcel }) => {
               disabled={!!loadingAction}
               className={
                 pendingAction === "accept"
-                  ? "min-w-[130px] px-5 py-3 rounded-xl bg-[#C6EB71] text-[#002B36] text-xs font-black uppercase hover:bg-[#b4dc55] transition-all disabled:opacity-50"
-                  : "min-w-[130px] px-5 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase hover:bg-red-600 transition-all disabled:opacity-50"
+                  ? "min-w-[130px] rounded-full bg-[#C6EB71] px-5 py-3 text-xs font-black uppercase text-[#002B36] transition-all hover:bg-[#b4dc55] disabled:opacity-50"
+                  : "min-w-[130px] rounded-full bg-red-500 px-5 py-3 text-xs font-black uppercase text-white transition-all hover:bg-red-600 disabled:opacity-50"
               }
             >
               {loadingAction
