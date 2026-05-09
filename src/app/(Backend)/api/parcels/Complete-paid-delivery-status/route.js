@@ -1,26 +1,16 @@
 import { getParcels } from "@/app/(Backend)/lib/dbConnect";
 import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
-
 export async function GET(request) {
   try {
     const user = await verifyToken(request);
-
-    if (!user) {
-      return Response.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
+    if (!user) return Response.json({ success: false }, { status: 401 });
 
     const parcelCollection = await getParcels();
 
     const pipeline = [
-      {
-        // Filter by the logged-in user's email (Sender)
-        $match: {
-          senderEmail: user.email, 
-        },
-      },
+      { $match: { senderEmail: user.email } },
       {
         $facet: {
-          // Payment Stats
           paymentStats: [
             {
               $group: {
@@ -30,13 +20,17 @@ export async function GET(request) {
               },
             },
           ],
-          // Delivery Stats
           deliveryStats: [
             {
               $group: {
                 _id: null,
                 delivered: { $sum: { $cond: [{ $eq: ["$DeliveryStatus", "delivered"] }, 1, 0] } },
-                pending: { $sum: { $cond: [{ $eq: ["$DeliveryStatus", "pending"] }, 1, 0] } },
+                // DYNAMIC PENDING: Counts anything that is NOT 'delivered'
+                pending: { 
+                  $sum: { 
+                    $cond: [{ $ne: ["$DeliveryStatus", "delivered"] }, 1, 0] 
+                  } 
+                },
               },
             },
           ],
@@ -51,8 +45,6 @@ export async function GET(request) {
     ];
 
     const result = await parcelCollection.aggregate(pipeline).toArray();
-
-    // Formatting defaults so Recharts doesn't crash if data is 0
     const stats = result[0] || {};
     
     return Response.json({
@@ -61,7 +53,7 @@ export async function GET(request) {
         paid: stats.payment?.paid || 0,
         unpaid: stats.payment?.unpaid || 0,
         delivered: stats.delivery?.delivered || 0,
-        pending: stats.delivery?.pending || 0,
+        pending: stats.delivery?.pending || 0, // This is now dynamic
       }
     });
   } catch (error) {
