@@ -50,6 +50,10 @@ export async function proxy(request) {
     return NextResponse.redirect(loginurl);
   }
 
+  if (isAuthenticated && reqpath === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   // Admin route protection (only custom accessToken দিয়ে role check)
   if (isAdminRoute) {
     if (!accessToken) {
@@ -104,6 +108,7 @@ export async function proxy(request) {
 
 export const config = {
   matcher: [
+    "/",
     "/be-a-rider/:path*",
     "/send-parcel/:path*",
     "/dashboard/:path*",
