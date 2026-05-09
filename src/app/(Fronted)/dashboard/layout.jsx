@@ -1,42 +1,58 @@
 import DashboardLayoutClient from "@/Componets/Shared/DashboardLayoutClient";
+import { cookies } from "next/headers";
+import { jwtVerify } from "jose";
 
-export const metadata = {
-  title: {
-    default: "Dashboard | ZAP-SHIFT-PROJECT | Courier & Logistics Company",
-    template: "%s | Dashboard | ZAP-SHIFT-PROJECT",
-  },
+// ডাইনামিক মেটাডেটা ফাংশন
+export async function generateMetadata() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+  let role = "User"; // Default Role
 
-  description:
-    "Access your ZAP-SHIFT-PROJECT dashboard to manage parcels, track deliveries, view orders, and control your courier activities بسهولة and securely.",
+  if (token) {
+    try {
+      const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+      role = payload?.role || "User";
+    } catch (e) {
+      console.error("Metadata JWT Error:", e);
+    }
+  }
 
-  keywords: [
-    "dashboard ZAP SHIFT PROJECT",
-    "courier dashboard",
-    "parcel management system",
-    "track delivery dashboard",
-    "logistics dashboard Bangladesh",
-    "user dashboard courier",
-    "order management system",
-    "shipping dashboard",
-  ],
+  // রোল অনুযায়ী টাইটেল সেট করা
+  const roleTitles = {
+    admin: "Admin Control Panel",
+    rider: "Rider Delivery Portal",
+    user: "User Dashboard",
+  };
 
-  openGraph: {
-    title: "Dashboard | ZAP-SHIFT-PROJECT",
-    description:
-      "Manage your courier activities, track parcels, and control your orders from one dashboard.",
-    url: "https://yourdomain.com/dashboard",
-    siteName: "ZAP-SHIFT-PROJECT",
-    type: "website",
-  },
+  const currentTitle = roleTitles[role.toLowerCase()] || "Dashboard";
 
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+  return {
+    title: {
+      default: `${currentTitle} | ZAP-SHIFT-PROJECT`,
+      template: `%s | ${currentTitle} | ZAP-SHIFT-PROJECT`,
+    },
+    description: `Access your ${role} dashboard at ZAP-SHIFT-PROJECT to manage parcels and track deliveries securely.`,
+    openGraph: {
+      title: `${currentTitle} | ZAP-SHIFT-PROJECT`,
+      description: `Manage your courier activities as a ${role}.`,
+      url: "https://yourdomain.com/dashboard",
+      siteName: "ZAP-SHIFT-PROJECT",
+      type: "website",
+    },
+    robots: {
+      index: false,
+      follow: true,
+    },
+  };
+}
 
 const DashboardLayout = ({ children }) => {
-  return <DashboardLayoutClient>{children}</DashboardLayoutClient>;
+  return (
+    <DashboardLayoutClient>
+      {children}
+    </DashboardLayoutClient>
+  );
 };
 
 export default DashboardLayout;

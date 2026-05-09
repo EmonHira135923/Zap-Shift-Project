@@ -1,5 +1,6 @@
 import { getParcels, getRiders } from "@/app/(Backend)/lib/dbConnect";
 import { logTracking } from "@/app/(Backend)/lib/logTracking";
+import { verifyAdmin } from "@/app/(Backend)/middlewares/IsAdmin";
 import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 import { ObjectId } from "mongodb";
 
@@ -42,6 +43,14 @@ export async function PATCH(request, { params }) {
       return Response.json(
         { success: false, message: "Unauthorized" },
         { status: 401 },
+      );
+    }
+
+    const admin = await verifyAdmin(request);
+    if (!admin) {
+      return Response.json(
+        { success: false, message: "Forbidden-Admin Acess Only" },
+        { status: 403 },
       );
     }
 

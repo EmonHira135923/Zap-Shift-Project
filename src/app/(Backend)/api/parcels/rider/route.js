@@ -1,9 +1,27 @@
 import { getParcels } from "@/app/(Backend)/lib/dbConnect";
+import { verifyRider } from "@/app/(Backend)/middlewares/IsRider";
+import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export async function GET(request) {
   try {
+    const user = await verifyToken(request);
+    if (!user) {
+      return Response.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const rider = await verifyRider(request);
+    if (!rider) {
+      return Response.json(
+        { success: false, message: "Forbidden-Rider Access Only" },
+        { status: 403 },
+      );
+    }
+
     const parcelCollection = await getParcels();
 
     const { searchParams } = new URL(request.url);
@@ -33,7 +51,9 @@ export async function GET(request) {
         .filter(Boolean);
 
       query.DeliveryStatus = {
-        $in: statuses.map((status) => new RegExp(`^${escapeRegex(status)}$`, "i")),
+        $in: statuses.map(
+          (status) => new RegExp(`^${escapeRegex(status)}$`, "i"),
+        ),
       };
     }
 

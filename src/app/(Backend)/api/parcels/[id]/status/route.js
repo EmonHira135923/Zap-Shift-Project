@@ -1,5 +1,7 @@
 import { getParcels, getRiders } from "@/app/(Backend)/lib/dbConnect";
 import { logTracking } from "@/app/(Backend)/lib/logTracking";
+import { verifyRider } from "@/app/(Backend)/middlewares/IsRider";
+import { verifyToken } from "@/app/(Backend)/middlewares/verifyToken";
 import { ObjectId } from "mongodb";
 
 const ASSIGNED_STATUS_REGEX = /^rider assigned$/i;
@@ -27,6 +29,22 @@ const PROGRESS_ACTIONS = {
 
 export async function PATCH(request, { params }) {
   try {
+    const user = await verifyToken(request);
+    if (!user) {
+      return Response.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const rider = await verifyRider(request);
+    if (!rider) {
+      return Response.json(
+        { success: false, message: "Forbidden-Rider Access Only" },
+        { status: 403 },
+      );
+    }
+
     const parcelCollection = await getParcels();
     const riderCollection = await getRiders();
 
