@@ -1,7 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Loader2,
+  Eye,
+  EyeOff,
+  UserCheck,
+  Bike,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,15 +21,26 @@ const Loginpage = () => {
   const router = useRouter();
   const searchparms = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // React Hook Form Initialization
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
 
   const callbackurl = searchparms.get("callbackUrl") || "/dashboard";
+
+  // Quick Demo Login Autofill Handler
+  const handleDemoFill = (email, password) => {
+    setValue("email", email, { shouldValidate: true });
+    setValue("password", password, { shouldValidate: true });
+    toast.info(`Filled credentials for ${email.split("@")[0]}`, {
+      autoClose: 1500,
+    });
+  };
 
   // Form Submit Handler
   const onSubmit = async (data) => {
@@ -128,7 +147,6 @@ const Loginpage = () => {
                   </label>
                   <Link
                     href="/auth/forgot-password"
-                    size={14}
                     className="text-xs font-semibold text-gray-400 hover:text-[#002B36]"
                   >
                     Forgot?
@@ -147,10 +165,17 @@ const Loginpage = () => {
                         message: "Minimum 6 characters required",
                       },
                     })}
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#C6EB71] outline-none text-sm transition-all"
+                    className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#C6EB71] outline-none text-sm transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#002B36] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
                 {errors.password && (
                   <p className="text-red-500 text-[10px] ml-1 font-semibold">
@@ -175,6 +200,31 @@ const Loginpage = () => {
                 "Sign In"
               )}
             </button>
+
+            {/* Separate Demo Credentials Section */}
+            <div className="bg-gray-50/50 rounded-xl p-3 border border-gray-100 flex flex-col gap-2">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center">
+                Quick Demo Login
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleDemoFill("admin@gmail.com", "admin1234")}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white border border-gray-200 hover:border-[#002B36] rounded-lg text-xs font-semibold text-[#002B36] shadow-sm transition-all"
+                >
+                  <UserCheck size={14} className="text-gray-400" />
+                  Admin Demo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoFill("rider@gmail.com", "rider1234")}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white border border-gray-200 hover:border-[#002B36] rounded-lg text-xs font-semibold text-[#002B36] shadow-sm transition-all"
+                >
+                  <Bike size={14} className="text-gray-400" />
+                  Rider Demo
+                </button>
+              </div>
+            </div>
 
             {/* Social Login Section */}
             <div className="relative flex items-center py-2">
