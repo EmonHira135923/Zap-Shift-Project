@@ -1,108 +1,126 @@
-# ZapShift - Parcel Delivery & Courier Management Platform
+<div align="center">
 
-ZapShift is a full-stack Next.js application designed to simplify parcel booking, courier management, rider assignment, payment processing, and delivery tracking for a modern logistics workflow. The project combines a customer-facing booking experience with an admin and rider dashboard to support end-to-end parcel operations.
+# 📦 ZapShift
 
-## Project Overview
+**Parcel Delivery & Courier Management Platform**
 
-ZapShift was built to solve the challenge of managing parcel deliveries in a structured and transparent way. Instead of relying on scattered communication and manual tracking, the platform gives users a centralized system to:
+A full-stack Next.js application for booking, tracking, and managing parcel deliveries — with dedicated workflows for customers, riders, and admins.
 
-- Book parcels online
-- Track delivery progress
-- Pay securely for deliveries
-- Monitor courier operations
-- Manage rider and admin workflows
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![Stripe](https://img.shields.io/badge/Payments-Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
-The system is intended for customers, admins, and delivery riders who need a reliable digital workflow for logistics and delivery management.
+[Live Demo](https://zap-shift-project-sooty.vercel.app/) · [Repository](https://github.com/EmonHira135923/Zap-Shift-Project) · [Report an Issue](https://github.com/EmonHira135923/Zap-Shift-Project/issues)
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [User Roles & Permissions](#user-roles--permissions)
+- [Authentication Flow](#authentication-flow)
+- [Application Workflow](#application-workflow)
+- [API Reference](#api-reference)
+- [Database Schema](#database-schema)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Demo Credentials](#demo-credentials)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [Challenges & Solutions](#challenges--solutions)
+- [Author](#author)
+- [License](#license)
+
+---
+
+## Overview
+
+ZapShift centralizes parcel logistics into a single digital workflow. Rather than relying on scattered communication and manual status updates, it gives customers, riders, and admins one shared system to:
+
+- 📮 Book parcels online
+- 🚚 Track delivery progress in real time
+- 💳 Pay securely for deliveries
+- 🧭 Monitor courier operations
+- 🗂️ Manage rider and admin workflows
 
 ## Problem Statement
 
-Before this system, parcel handling often involves fragmented communication, delayed updates, and manual status tracking. Customers may not know where their parcel is, admins may struggle to assign riders efficiently, and riders may not have a clear way to process delivery actions.
+Traditional parcel handling often suffers from fragmented communication, delayed status updates, and inefficient rider assignment — leaving customers in the dark and admins without a clear operational view.
 
-ZapShift addresses these issues by providing:
+ZapShift solves this with:
 
 - A centralized parcel booking flow
 - Role-based access for users, admins, and riders
-- Real-time delivery status updates through tracking logs
-- Secure payment integration for parcel bookings
-- A dashboard for business operations and delivery oversight
+- Real-time delivery status via tracking logs
+- Secure, integrated payment processing
+- A unified dashboard for business and delivery oversight
 
-## Main Features
+## Features
 
-The following features are implemented in the current codebase:
+<table>
+<tr><td width="50%" valign="top">
 
-- User registration and login
-- Social login with Google and GitHub via NextAuth
-- Credential-based authentication with JWT cookies
-- Role-based access control for admin, rider, and user roles
-- Parcel booking and cost calculation
-- Parcel listing and parcel detail views
-- Parcel deletion and update workflows
-- Rider application and approval system
-- Rider assignment to parcels
-- Rider delivery actions such as accept, reject, pickup, and deliver
-- Parcel tracking log generation
-- Payment checkout using Stripe
-- Payment success and cancellation handling
+**Accounts & Access**
+- Email/password registration & login
+- Google and GitHub social login (NextAuth)
+- JWT-based credential authentication
+- Role-based access control (Admin / Rider / User)
+- Invitation-based registration with email notifications
+
+**Parcels**
+- Parcel booking with automatic cost calculation
+- Parcel listing, filtering & detail views
+- Parcel update and deletion workflows
+- Location-based form fields (Bangladesh states/districts)
+
+</td><td width="50%" valign="top">
+
+**Riders**
+- Rider application & admin approval
+- Rider-to-parcel assignment
+- Accept / reject / pickup / deliver actions
+- Rider-specific dashboard
+
+**Payments & Tracking**
+- Stripe checkout integration
+- Payment success/cancellation handling
+- Automatic tracking log generation
 - Cloudinary-based profile image upload
-- Invitation-based user registration flow
-- Email notifications for invitations
-- Location-based parcel form fields using Bangladesh state and district data
-- Dashboard views for different user roles
+- Role-specific dashboards
 
-## Technology Stack
+</td></tr>
+</table>
 
-### Frontend
+## Tech Stack
 
-- Next.js 16
-- React 19
-- Tailwind CSS
-- Framer Motion
-- React Hook Form
-- React Toastify
-- React Icons
-- Recharts
-- Swiper
-- React Leaflet
+| Layer | Technologies |
+|---|---|
+| **Frontend** | Next.js 16 · React 19 · Tailwind CSS · Framer Motion · React Hook Form · React Toastify · React Icons · Recharts · Swiper · React Leaflet |
+| **Backend** | Next.js App Router Route Handlers · Node.js · JWT Auth · NextAuth · Middleware Authorization · Axios |
+| **Database** | MongoDB Atlas (Node.js driver) |
+| **Auth** | Custom JWT (access/refresh cookies) · NextAuth (Google, GitHub) · Role-based middleware |
+| **Services** | Stripe (payments) · Cloudinary (images) · Nodemailer (email) |
 
-### Backend
+## Architecture
 
-- Next.js App Router Route Handlers
-- Node.js
-- JWT-based authentication
-- NextAuth for social authentication
-- Middleware-based authorization checks
-- Axios for client-server API communication
-
-### Database
-
-- MongoDB Atlas
-- MongoDB Node.js driver
-
-### Authentication
-
-- Custom JWT authentication via access and refresh cookies
-- NextAuth for Google and GitHub login
-- Role-based authorization using middleware and token payloads
-
-### Tools & Services
-
-- Stripe for payment processing
-- Cloudinary for image uploads
-- Nodemailer for email delivery
-- MongoDB Atlas for data storage
-
-## Project Architecture
-
-The application follows a Next.js App Router architecture where frontend pages and backend API routes live together in the same project.
+The app uses a Next.js App Router structure, colocating frontend pages and backend API routes in one project.
 
 ```text
 src/
 ├── app/
 │   ├── (Backend)/
-│   │   ├── api/
-│   │   ├── lib/
-│   │   └── middlewares/
-│   └── (Fronted)/
+│   │   ├── api/            # REST-style API route handlers
+│   │   ├── lib/             # DB, email, tracking, Cloudinary helpers
+│   │   └── middlewares/     # Auth & authorization middleware
+│   └── (Fronted)/           # Public and authenticated UI pages
 ├── Componets/
 │   ├── buttons/
 │   ├── cards/
@@ -114,280 +132,233 @@ src/
 │   ├── Skeltons/
 │   └── utils/
 ├── public/
-│   └── data/
+│   └── data/                # Bangladesh state/district & map data
 └── proxy.js
 ```
 
-### Folder Purpose
+## User Roles & Permissions
 
-- app/(Fronted): public and authenticated UI pages
-- app/(Backend)/api: REST-style API route handlers
-- app/(Backend)/lib: database, email, tracking, cloudinary, and helper utilities
-- app/(Backend)/middlewares: authentication and authorization middleware
-- Componets: reusable UI components, forms, cards, and pages
-- public/data: Bangladesh state/district and map data used by the UI
+| Capability | Admin | Rider | User |
+|---|:---:|:---:|:---:|
+| Register & log in | ✅ | ✅ | ✅ |
+| Book parcels | – | – | ✅ |
+| View own parcel history | – | – | ✅ |
+| Make payments | – | – | ✅ |
+| View own tracking info | – | – | ✅ |
+| Accept / reject deliveries | – | ✅ | – |
+| Mark parcel picked up / delivered | – | ✅ | – |
+| View/manage all parcels | ✅ | – | – |
+| Approve rider applications | ✅ | – | – |
+| Assign riders to deliveries | ✅ | – | – |
+| Access admin dashboard | ✅ | – | – |
 
-## User Roles & Permission System
+## Authentication Flow
 
-The project uses three implemented roles:
-
-### Admin
-
-- Manages users, riders, and parcels
-- Can view and manage all parcel records
-- Can approve rider applications
-- Can assign riders to deliveries
-- Can access admin-only dashboard sections
-
-### Rider
-
-- Can receive assigned delivery tasks
-- Can accept or reject a delivery request
-- Can mark a parcel as picked up or delivered
-- Can access rider-specific dashboard functionality
-
-### User
-
-- Can register and log in
-- Can book parcels
-- Can view their own parcel history
-- Can manage their profile
-- Can make payments for parcel bookings
-- Can view tracking information for their parcels
-
-## Authentication & Authorization Flow
-
-The authentication flow is built around a hybrid approach:
-
-1. User logs in with credentials or social providers
-2. The server validates credentials or social authentication
-3. A JWT access token is issued and stored in cookies
-4. The application uses the token to identify the user across requests
-5. Middleware checks the user role before granting access to protected routes
-
-### Flow
+ZapShift uses a hybrid authentication approach combining credential-based JWT auth with social sign-in:
 
 ```text
 Login / Social Sign-In
-↓
-Token Verification
-↓
-Role Checking
-↓
+        │
+        ▼
+  Token Verification
+        │
+        ▼
+    Role Checking
+        │
+        ▼
 Protected Route Validation
-↓
-Access Granted / Denied
+        │
+        ▼
+  Access Granted / Denied
 ```
+
+1. User logs in with credentials or a social provider.
+2. The server validates credentials or social authentication.
+3. A JWT access token is issued and stored in cookies.
+4. The app uses the token to identify the user on subsequent requests.
+5. Middleware checks the user's role before granting access to protected routes.
 
 ## Application Workflow
 
-A typical parcel lifecycle in the platform looks like this:
-
 ```text
 User books a parcel
-→ Parcel data is submitted to the API
-→ Parcel is stored in MongoDB
-→ Payment checkout is initiated for unpaid parcels
-→ Payment success updates the parcel status
-→ Rider can accept and process the delivery
-→ Tracking logs are generated
-→ User can view the track history and delivery state
+   → Parcel data submitted to the API
+   → Parcel stored in MongoDB
+   → Payment checkout initiated for unpaid parcels
+   → Payment success updates the parcel status
+   → Rider accepts and processes the delivery
+   → Tracking logs are generated
+   → User views tracking history and delivery state
 ```
 
-## API Documentation
-
-The following API endpoints are implemented in the project:
+## API Reference
 
 ### Authentication
 
-- POST /api/auth/register
-  - Registers a new user or completes invitation-based registration
-- POST /api/auth/login
-  - Authenticates a user and creates JWT cookies
-- POST /api/auth/logout
-  - Clears authentication cookies
-- GET /api/auth/myprofile
-  - Returns the authenticated user profile
-- PATCH /api/auth/myprofile/[id]
-  - Updates user profile data and image
-- POST /api/auth/invite
-  - Sends an invitation email to a new user
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Register a new user, or complete invitation-based registration |
+| `POST` | `/api/auth/login` | Authenticate a user and issue JWT cookies |
+| `POST` | `/api/auth/logout` | Clear authentication cookies |
+| `GET` | `/api/auth/myprofile` | Get the authenticated user's profile |
+| `PATCH` | `/api/auth/myprofile/[id]` | Update profile data / image |
+| `POST` | `/api/auth/invite` | Send an invitation email to a new user |
 
 ### Parcels
 
-- GET /api/parcels
-  - Fetches parcels with optional search and filter parameters
-- POST /api/parcels
-  - Creates a new parcel booking
-- GET /api/parcels/[id]
-  - Retrieves a single parcel
-- PATCH /api/parcels/[id]
-  - Assigns a rider to a parcel
-- DELETE /api/parcels/[id]
-  - Deletes a parcel
-- PATCH /api/parcels/[id]/status
-  - Handles rider actions such as accept, reject, pickup, and deliver
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/parcels` | Fetch parcels (search & filter supported) |
+| `POST` | `/api/parcels` | Create a new parcel booking |
+| `GET` | `/api/parcels/[id]` | Retrieve a single parcel |
+| `PATCH` | `/api/parcels/[id]` | Assign a rider to a parcel |
+| `DELETE` | `/api/parcels/[id]` | Delete a parcel |
+| `PATCH` | `/api/parcels/[id]/status` | Rider actions: accept, reject, pickup, deliver |
 
 ### Riders
 
-- GET /api/riders
-  - Lists rider records with filtering and pagination
-- POST /api/riders
-  - Submits a rider application
-- PATCH /api/riders/[id]
-  - Updates rider status and promotes the user to rider role when accepted
-- DELETE /api/riders/[id]
-  - Removes a rider record
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/riders` | List riders (filtering & pagination) |
+| `POST` | `/api/riders` | Submit a rider application |
+| `PATCH` | `/api/riders/[id]` | Update rider status; promotes user to rider role on approval |
+| `DELETE` | `/api/riders/[id]` | Remove a rider record |
 
 ### Payments & Tracking
 
-- POST /api/checkout
-  - Creates a Stripe checkout session
-- PATCH /api/payment-success
-  - Confirms payment and updates parcel/payment records
-- GET /api/payment-success
-  - Lists payment history for the authenticated user
-- GET /api/trackings/[trackingId]/logs
-  - Returns tracking history for a parcel
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/checkout` | Create a Stripe checkout session |
+| `PATCH` | `/api/payment-success` | Confirm payment; update parcel/payment records |
+| `GET` | `/api/payment-success` | List payment history for the authenticated user |
+| `GET` | `/api/trackings/[trackingId]/logs` | Get tracking history for a parcel |
 
-## Database Structure
+## Database Schema
 
-The project uses MongoDB with the following collections:
+MongoDB collections used by the application:
 
-### users
+| Collection | Purpose |
+|---|---|
+| **users** | Account info — role, email, password hash, phone, image, provider, timestamps |
+| **Parcels** | Sender/receiver info, parcel type, weight, cost, payment status, delivery status, assignment data |
+| **Payments** | Transaction records — amount, transaction ID, customer info, payment status |
+| **Riders** | Rider applications and operational status (availability, approval state) |
+| **Trackings** | Parcel tracking logs generated during status updates |
 
-- Stores user account information
-- Includes role, email, password hash, phone, image, provider, and timestamps
+## Getting Started
 
-### Parcels
+### Prerequisites
 
-- Stores parcel details including sender, receiver, parcel type, weight, cost, payment status, delivery status, and assignment data
+- Node.js (latest LTS recommended)
+- MongoDB Atlas account
+- Stripe account
+- Cloudinary account
+- Google & GitHub OAuth developer credentials
 
-### Payments
+### Installation
 
-- Stores payment transaction records, amount, transaction ID, customer information, and payment status
+```bash
+git clone https://github.com/EmonHira135923/Zap-Shift-Project.git
+cd zap-shift-project
+npm install
+npm run dev
+```
 
-### Riders
+### Setup Checklist
 
-- Stores rider applications and rider operational status such as availability and approval state
-
-### Trackings
-
-- Stores parcel tracking logs created during progress updates
+1. Create a MongoDB Atlas cluster and add the connection variables below.
+2. Set up Stripe and add your secret key.
+3. Configure Google and GitHub OAuth credentials.
+4. Configure Cloudinary credentials for profile image uploads.
+5. Set up Gmail credentials for invitation emails.
+6. Run `npm run dev` to start the development server.
 
 ## Environment Variables
 
-The following environment variables are expected by the project:
+Create a `.env` file in the project root with the following:
 
 ```env
+# Auth
 NEXTAUTH_SECRET=
 NEXTAUTH_REFRESH_SECRET=
+NEXT_AUTH_URL=
+
+# Database
 DB_USER=
 DB_PASS=
+
+# Social Login
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GITHUB_ID=
 GITHUB_SECRET=
+
+# Payments
 STRIPE_SECRET_KEY=
-NEXT_AUTH_URL=
+
+# Email (invitations)
 EMAIL_USER=
 EMAIL_PASS=
+
+# Cloudinary
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
-If any of these are not configured, the related services will not function properly.
-
-## Installation & Setup Guide
-
-### Prerequisites
-
-- Node.js (latest LTS version recommended)
-- MongoDB Atlas account
-- Stripe account
-- Cloudinary account
-- Google and GitHub developer credentials for social login
-
-### Steps
-
-```bash
-git clone <repository-url>
-cd zap-shift-project
-npm install
-npm run dev
-```
-
-### Setup Instructions
-
-1. Create a MongoDB Atlas cluster and configure the database connection variables.
-2. Set up Stripe and add the secret key to the environment variables.
-3. Configure Google and GitHub OAuth credentials.
-4. Configure Cloudinary credentials for profile image uploads.
-5. Set up Gmail credentials for invitation emails.
-6. Start the development server with npm run dev.
+> ⚠️ If any of these are missing, the related service (auth, payments, email, or image upload) will not function correctly.
 
 ## Demo Credentials
 
-Use the following demo accounts to sign in from the login page:
+Try the platform using these accounts from the login page:
 
-### Admin
-- Email: admin@gmail.com
-- Password: admin1234
+| Role | Email | Password |
+|---|---|---|
+| **Admin** | `admin@gmail.com` | `admin1234` |
+| **Rider** | `rider@gmail.com` | `rider1234` |
 
-### Rider
-- Email: rider@gmail.com
-- Password: rider1234
+## Deployment
 
+1. Build the project:
 
-## Deployment Guide
+   ```bash
+   npm run build
+   ```
 
-To deploy the application in production:
+2. Set all required environment variables on your hosting platform.
+3. Deploy to Vercel, Netlify, or a custom Node.js host.
+4. Ensure MongoDB connection, Stripe webhooks, and Cloudinary credentials are available in production.
+5. Set the production base URL in `NEXT_AUTH_URL`.
 
-1. Build the project with:
+## Roadmap
 
-```bash
-npm run build
-```
-
-2. Set all required environment variables in the hosting platform.
-3. Deploy the project to a platform such as Vercel, Netlify, or a custom Node.js host.
-4. Make sure the MongoDB connection, Stripe webhooks, and Cloudinary credentials are available in the production environment.
-5. Configure the production base URL in NEXT_AUTH_URL.
-
-## Future Improvements
-
-Possible improvements for the next iteration include:
-
-- Real-time delivery notifications
-- Admin analytics and reporting dashboards
-- Advanced search and filtering for parcels and payments
-- Enhanced tracking map integration
-- Mobile app support
-- Automated SMS notifications
-- Better audit logs for operations
+- [ ] Real-time delivery notifications
+- [ ] Admin analytics and reporting dashboards
+- [ ] Advanced search and filtering for parcels and payments
+- [ ] Enhanced tracking map integration
+- [ ] Mobile app support
+- [ ] Automated SMS notifications
+- [ ] Improved audit logs for operations
 
 ## Challenges & Solutions
 
-Some of the main technical challenges in this project were:
-
-- Managing multiple roles in one application without compromising security
-- Implementing secure route protections through middleware and token validation
-- Handling parcel lifecycle updates across parcels, payments, and tracking logs
-- Integrating Stripe payment confirmation with parcel status updates
-- Supporting image uploads and profile management through Cloudinary
-
-These challenges were addressed through middleware-based access control, route-level validation, centralized database helpers, and structured tracking logic.
+| Challenge | Solution |
+|---|---|
+| Managing multiple roles securely in one app | Middleware-based access control with role checks on every protected route |
+| Protecting routes from unauthorized access | Token validation combined with route-level middleware |
+| Coordinating updates across parcels, payments & tracking | Centralized database helpers and structured tracking logic |
+| Syncing Stripe payment confirmation with parcel status | Dedicated payment-success handler that updates parcel state atomically |
+| Handling image uploads and profile management | Cloudinary integration for reliable, scalable image storage |
 
 ## Author
 
-Name: Your Name
+**Emon Hossain Hira**
 
-GitHub: your-github
-
-LinkedIn: your-linkedin
+- GitHub: [@EmonHira135923](https://github.com/EmonHira135923)
+- Repository: [Zap-Shift-Project](https://github.com/EmonHira135923/Zap-Shift-Project)
+- Live Demo: [zap-shift-project-sooty.vercel.app](https://zap-shift-project-sooty.vercel.app/)
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
